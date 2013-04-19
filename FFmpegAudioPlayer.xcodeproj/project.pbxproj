@@ -1,0 +1,482 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9A6674821721133300FB478C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674811721133300FB478C /* UIKit.framework */; };
+		9A6674841721133300FB478C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674831721133300FB478C /* Foundation.framework */; };
+		9A6674861721133300FB478C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674851721133300FB478C /* CoreGraphics.framework */; };
+		9A66748C1721133300FB478C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A66748A1721133300FB478C /* InfoPlist.strings */; };
+		9A66748E1721133300FB478C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A66748D1721133300FB478C /* main.m */; };
+		9A6674921721133300FB478C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674911721133300FB478C /* AppDelegate.m */; };
+		9A6674941721133300FB478C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674931721133300FB478C /* Default.png */; };
+		9A6674961721133300FB478C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674951721133300FB478C /* Default@2x.png */; };
+		9A6674981721133300FB478C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674971721133300FB478C /* Default-568h@2x.png */; };
+		9A66749B1721133300FB478C /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674991721133300FB478C /* MainStoryboard_iPhone.storyboard */; };
+		9A66749E1721133300FB478C /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A66749C1721133300FB478C /* MainStoryboard_iPad.storyboard */; };
+		9A6674A11721133300FB478C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674A01721133300FB478C /* ViewController.m */; };
+		9A6674A91721133400FB478C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674A81721133400FB478C /* SenTestingKit.framework */; };
+		9A6674AA1721133400FB478C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674811721133300FB478C /* UIKit.framework */; };
+		9A6674AB1721133400FB478C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674831721133300FB478C /* Foundation.framework */; };
+		9A6674B31721133400FB478C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674B11721133400FB478C /* InfoPlist.strings */; };
+		9A6674B61721133400FB478C /* FFmpegAudioPlayerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674B51721133400FB478C /* FFmpegAudioPlayerTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9A6674AC1721133400FB478C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A6674761721133300FB478C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A66747D1721133300FB478C;
+			remoteInfo = FFmpegAudioPlayer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		9A66747E1721133300FB478C /* FFmpegAudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FFmpegAudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A6674811721133300FB478C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		9A6674831721133300FB478C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		9A6674851721133300FB478C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		9A6674891721133300FB478C /* FFmpegAudioPlayer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FFmpegAudioPlayer-Info.plist"; sourceTree = "<group>"; };
+		9A66748B1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9A66748D1721133300FB478C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9A66748F1721133300FB478C /* FFmpegAudioPlayer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FFmpegAudioPlayer-Prefix.pch"; sourceTree = "<group>"; };
+		9A6674901721133300FB478C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		9A6674911721133300FB478C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		9A6674931721133300FB478C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		9A6674951721133300FB478C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		9A6674971721133300FB478C /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		9A66749A1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
+		9A66749D1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
+		9A66749F1721133300FB478C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		9A6674A01721133300FB478C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9A6674A71721133400FB478C /* FFmpegAudioPlayerTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FFmpegAudioPlayerTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A6674A81721133400FB478C /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		9A6674B01721133400FB478C /* FFmpegAudioPlayerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FFmpegAudioPlayerTests-Info.plist"; sourceTree = "<group>"; };
+		9A6674B21721133400FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9A6674B41721133400FB478C /* FFmpegAudioPlayerTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FFmpegAudioPlayerTests.h; sourceTree = "<group>"; };
+		9A6674B51721133400FB478C /* FFmpegAudioPlayerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FFmpegAudioPlayerTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9A66747B1721133300FB478C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A6674821721133300FB478C /* UIKit.framework in Frameworks */,
+				9A6674841721133300FB478C /* Foundation.framework in Frameworks */,
+				9A6674861721133300FB478C /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9A6674A31721133400FB478C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A6674A91721133400FB478C /* SenTestingKit.framework in Frameworks */,
+				9A6674AA1721133400FB478C /* UIKit.framework in Frameworks */,
+				9A6674AB1721133400FB478C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9A6674751721133300FB478C = {
+			isa = PBXGroup;
+			children = (
+				9A6674871721133300FB478C /* FFmpegAudioPlayer */,
+				9A6674AE1721133400FB478C /* FFmpegAudioPlayerTests */,
+				9A6674801721133300FB478C /* Frameworks */,
+				9A66747F1721133300FB478C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9A66747F1721133300FB478C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A66747E1721133300FB478C /* FFmpegAudioPlayer.app */,
+				9A6674A71721133400FB478C /* FFmpegAudioPlayerTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9A6674801721133300FB478C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9A6674811721133300FB478C /* UIKit.framework */,
+				9A6674831721133300FB478C /* Foundation.framework */,
+				9A6674851721133300FB478C /* CoreGraphics.framework */,
+				9A6674A81721133400FB478C /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9A6674871721133300FB478C /* FFmpegAudioPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				9A6674901721133300FB478C /* AppDelegate.h */,
+				9A6674911721133300FB478C /* AppDelegate.m */,
+				9A6674991721133300FB478C /* MainStoryboard_iPhone.storyboard */,
+				9A66749C1721133300FB478C /* MainStoryboard_iPad.storyboard */,
+				9A66749F1721133300FB478C /* ViewController.h */,
+				9A6674A01721133300FB478C /* ViewController.m */,
+				9A6674881721133300FB478C /* Supporting Files */,
+			);
+			path = FFmpegAudioPlayer;
+			sourceTree = "<group>";
+		};
+		9A6674881721133300FB478C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9A6674891721133300FB478C /* FFmpegAudioPlayer-Info.plist */,
+				9A66748A1721133300FB478C /* InfoPlist.strings */,
+				9A66748D1721133300FB478C /* main.m */,
+				9A66748F1721133300FB478C /* FFmpegAudioPlayer-Prefix.pch */,
+				9A6674931721133300FB478C /* Default.png */,
+				9A6674951721133300FB478C /* Default@2x.png */,
+				9A6674971721133300FB478C /* Default-568h@2x.png */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9A6674AE1721133400FB478C /* FFmpegAudioPlayerTests */ = {
+			isa = PBXGroup;
+			children = (
+				9A6674B41721133400FB478C /* FFmpegAudioPlayerTests.h */,
+				9A6674B51721133400FB478C /* FFmpegAudioPlayerTests.m */,
+				9A6674AF1721133400FB478C /* Supporting Files */,
+			);
+			path = FFmpegAudioPlayerTests;
+			sourceTree = "<group>";
+		};
+		9A6674AF1721133400FB478C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9A6674B01721133400FB478C /* FFmpegAudioPlayerTests-Info.plist */,
+				9A6674B11721133400FB478C /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9A66747D1721133300FB478C /* FFmpegAudioPlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9A6674B91721133400FB478C /* Build configuration list for PBXNativeTarget "FFmpegAudioPlayer" */;
+			buildPhases = (
+				9A66747A1721133300FB478C /* Sources */,
+				9A66747B1721133300FB478C /* Frameworks */,
+				9A66747C1721133300FB478C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FFmpegAudioPlayer;
+			productName = FFmpegAudioPlayer;
+			productReference = 9A66747E1721133300FB478C /* FFmpegAudioPlayer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9A6674A61721133400FB478C /* FFmpegAudioPlayerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9A6674BC1721133400FB478C /* Build configuration list for PBXNativeTarget "FFmpegAudioPlayerTests" */;
+			buildPhases = (
+				9A6674A21721133400FB478C /* Sources */,
+				9A6674A31721133400FB478C /* Frameworks */,
+				9A6674A41721133400FB478C /* Resources */,
+				9A6674A51721133400FB478C /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9A6674AD1721133400FB478C /* PBXTargetDependency */,
+			);
+			name = FFmpegAudioPlayerTests;
+			productName = FFmpegAudioPlayerTests;
+			productReference = 9A6674A71721133400FB478C /* FFmpegAudioPlayerTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9A6674761721133300FB478C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Liao KuoHsun";
+			};
+			buildConfigurationList = 9A6674791721133300FB478C /* Build configuration list for PBXProject "FFmpegAudioPlayer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 9A6674751721133300FB478C;
+			productRefGroup = 9A66747F1721133300FB478C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9A66747D1721133300FB478C /* FFmpegAudioPlayer */,
+				9A6674A61721133400FB478C /* FFmpegAudioPlayerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9A66747C1721133300FB478C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A66748C1721133300FB478C /* InfoPlist.strings in Resources */,
+				9A6674941721133300FB478C /* Default.png in Resources */,
+				9A6674961721133300FB478C /* Default@2x.png in Resources */,
+				9A6674981721133300FB478C /* Default-568h@2x.png in Resources */,
+				9A66749B1721133300FB478C /* MainStoryboard_iPhone.storyboard in Resources */,
+				9A66749E1721133300FB478C /* MainStoryboard_iPad.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9A6674A41721133400FB478C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A6674B31721133400FB478C /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9A6674A51721133400FB478C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9A66747A1721133300FB478C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A66748E1721133300FB478C /* main.m in Sources */,
+				9A6674921721133300FB478C /* AppDelegate.m in Sources */,
+				9A6674A11721133300FB478C /* ViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9A6674A21721133400FB478C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A6674B61721133400FB478C /* FFmpegAudioPlayerTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9A6674AD1721133400FB478C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9A66747D1721133300FB478C /* FFmpegAudioPlayer */;
+			targetProxy = 9A6674AC1721133400FB478C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		9A66748A1721133300FB478C /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9A66748B1721133300FB478C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		9A6674991721133300FB478C /* MainStoryboard_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9A66749A1721133300FB478C /* en */,
+			);
+			name = MainStoryboard_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		9A66749C1721133300FB478C /* MainStoryboard_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9A66749D1721133300FB478C /* en */,
+			);
+			name = MainStoryboard_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		9A6674B11721133400FB478C /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9A6674B21721133400FB478C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		9A6674B71721133400FB478C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9A6674B81721133400FB478C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9A6674BA1721133400FB478C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FFmpegAudioPlayer/FFmpegAudioPlayer-Prefix.pch";
+				INFOPLIST_FILE = "FFmpegAudioPlayer/FFmpegAudioPlayer-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		9A6674BB1721133400FB478C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FFmpegAudioPlayer/FFmpegAudioPlayer-Prefix.pch";
+				INFOPLIST_FILE = "FFmpegAudioPlayer/FFmpegAudioPlayer-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		9A6674BD1721133400FB478C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FFmpegAudioPlayer.app/FFmpegAudioPlayer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FFmpegAudioPlayer/FFmpegAudioPlayer-Prefix.pch";
+				INFOPLIST_FILE = "FFmpegAudioPlayerTests/FFmpegAudioPlayerTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		9A6674BE1721133400FB478C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FFmpegAudioPlayer.app/FFmpegAudioPlayer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FFmpegAudioPlayer/FFmpegAudioPlayer-Prefix.pch";
+				INFOPLIST_FILE = "FFmpegAudioPlayerTests/FFmpegAudioPlayerTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9A6674791721133300FB478C /* Build configuration list for PBXProject "FFmpegAudioPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9A6674B71721133400FB478C /* Debug */,
+				9A6674B81721133400FB478C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9A6674B91721133400FB478C /* Build configuration list for PBXNativeTarget "FFmpegAudioPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9A6674BA1721133400FB478C /* Debug */,
+				9A6674BB1721133400FB478C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		9A6674BC1721133400FB478C /* Build configuration list for PBXNativeTarget "FFmpegAudioPlayerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9A6674BD1721133400FB478C /* Debug */,
+				9A6674BE1721133400FB478C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9A6674761721133300FB478C /* Project object */;
+}
