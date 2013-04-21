@@ -27,19 +27,44 @@
 
 // Useless in ARC mode
 - (void) destroyQueue {
+    AVPacket vxPacket;
+    NSMutableData *packetData = nil;
+    
+    [pLock lock];
+    while ([pQueue count]>0) {
+        packetData = [pQueue objectAtIndex:0];
+        if(packetData!= nil)
+        {
+            [packetData getBytes:&vxPacket];
+            av_free_packet(&vxPacket);
+            packetData = nil;
+            [pQueue removeObjectAtIndex: 0];
+            count--;
+        }
+    }
+    //[pQueue removeAllObjects];
     count = 0;
-    [pQueue removeAllObjects];
+    NSLog(@"Release Audio Packet Queue");
     if(pQueue) pQueue = nil;
+    
+    [pLock unlock];    
     if(pLock) pLock = nil;
+
 }
 
 -(int) putAVPacket: (AVPacket *) pPacket{
 
-    // memory leakage is related to pPacket    
+    // memory leakage is related to pPacket
+//    if ((av_dup_packet(pPacket)) < 0) {
+//        NSLog(@"Error duplicating packet");
+//    }
+    
     [pLock lock];
     
-    NSLog(@"putAVPacket %d", [pQueue count]);   
-    [pQueue addObject: [NSMutableData dataWithBytes:pPacket length:sizeof(*pPacket)]];
+    //NSLog(@"putAVPacket %d", [pQueue count]);
+    NSMutableData *pTmpData = [[NSMutableData alloc] initWithBytes:pPacket length:sizeof(*pPacket)];
+    [pQueue addObject: pTmpData];
+    pTmpData = nil;
     count++;
     [pLock unlock];
     return 1;

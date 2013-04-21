@@ -25,7 +25,6 @@ void HandleOutputBuffer (
 
 -(UInt32)putAVPacketsIntoAudioQueue:(AudioQueueBufferRef)audioQueueBuffer{
     AudioTimeStamp bufferStartTime={0};
-    static long LastStartTime=0;
     AVPacket AudioPacket={0};
     int gotFrame = 0;
     
@@ -34,8 +33,12 @@ void HandleOutputBuffer (
     av_init_packet(&AudioPacket);    
     buffer->mAudioDataByteSize = 0;
     buffer->mPacketDescriptionCount = 0;
-    
-    NSLog(@"get 1 from apQueue: %d", [audioPacketQueue count]);    
+
+    if(mIsRunning==false)
+    {
+        return 0 ;
+    }
+    //NSLog(@"get 1 from apQueue: %d", [audioPacketQueue count]);
     // If no data, we put silence audio
     // If AudioQueue buffer is empty, AudioQueue will stop. 
     if([audioPacketQueue count]==0)
@@ -77,6 +80,9 @@ void HandleOutputBuffer (
             pktData=AudioPacket.data;
             pktSize=AudioPacket.size;
             
+            if(pAVFrame1==NULL)
+                NSLog(@"pAVFrame1==NULL"); // bug here??
+                      
             while(pktSize>0) {
                 avcodec_get_frame_defaults(pAVFrame1);
                 @synchronized(self){
@@ -88,9 +94,7 @@ void HandleOutputBuffer (
                     break;
                 }
                 if(gotFrame>0) {
-//                    int data_size = av_samples_get_buffer_size(NULL, pAudioCodecCtx->channels,
-//                                                               pAVFrame1->nb_samples,pAudioCodecCtx->sample_fmt, 1);
-                    
+                    int outCount=0;                    
                     int data_size = av_samples_get_buffer_size(NULL, pAudioCodecCtx->channels,
                                                                pAVFrame1->nb_samples,pAudioCodecCtx->sample_fmt, 0);
                     
@@ -98,9 +102,8 @@ void HandleOutputBuffer (
                         @synchronized(self){
                             if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_FLTP){
                                 int in_samples = pAVFrame1->nb_samples;
-                                int outCount=0;
-                                uint8_t pTemp[8][data_size/2];
-                                uint8_t *pOut = (uint8_t *)&pTemp;
+
+
                                 //                                if (buffer->mPacketDescriptionCount == 0)
                                 {
                                     bufferStartTime.mSampleTime = LastStartTime+in_samples;
@@ -108,17 +111,19 @@ void HandleOutputBuffer (
                                     LastStartTime = bufferStartTime.mSampleTime;
                                 }
                                 
+                                uint8_t pTemp[8][data_size];
+                                uint8_t *pOut = (uint8_t *)&pTemp;
                                 outCount = swr_convert(pSwrCtx,
                                                        (uint8_t **)(&pOut),
                                                        in_samples,
                                                        (const uint8_t **)pAVFrame1->extended_data,
                                                        in_samples);
-#if 0 
+#if 0
                                 // We can use av_samples_alloc() and av_freep() for sample buffer
                                 // But use a static array may be efficience
-                                uint8_t *out=NULL;
+                                uint8_t *pOut=NULL;
                                 int out_linesize=0;
-                                av_samples_alloc(&out,
+                                av_samples_alloc(&pOut,
                                                  &out_linesize,
                                                  pAudioFrame->channels,
                                                  in_samples,
@@ -127,22 +132,33 @@ void HandleOutputBuffer (
                                                  );
                                 
                                 outCount = swr_convert(pSwrCtx,
-                                                       (uint8_t **)&out,
+                                                       (uint8_t **)&pOut,
                                                        in_samples,
                                                        (const uint8_t **)pAudioFrame->extended_data,
                                                        in_samples);
+                                // TODO: need free pOut
 #endif
                                 if(outCount<0)
                                     NSLog(@"swr_convert fail");
-                                
-                                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pOut, data_size/2);
-                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
-                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size/2;
-                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket = 1;
+                                                                
+#if 1
+                                    memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pOut, data_size/2);
+                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
+                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size/2;
+                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
+                                    = 1;
+                                    buffer->mAudioDataByteSize += data_size/2;
+#else
+                                    memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pOut, outCount*pAudioFrame->channels);
+                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
+                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = outCount*pAudioFrame->channels;
+                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
+                                    = 1;
+                                    buffer->mAudioDataByteSize += outCount*pAudioFrame->channels;
+#endif
                             }
                         };
                         
-                        buffer->mAudioDataByteSize += data_size/2;
                         buffer->mPacketDescriptionCount++;
                     }
                     gotFrame = 0;
@@ -179,7 +195,7 @@ void HandleOutputBuffer (
     if (buffer->mPacketDescriptionCount > 0) {
         int err;
         
-#if 1  // CBR
+#if 0  // CBR
         if ((err = AudioQueueEnqueueBuffer(mQueue,
                                            buffer,
                                            0,
@@ -291,18 +307,18 @@ void HandleOutputBuffer (
             }
             else {
                 
+            // When I test, sometimes the data from network may loss information
+            if(pAudioCodecCtx->bit_rate==0) {
+                pAudioCodecCtx->bit_rate=0x50000;
+            }
                 
             vBufferSize = [self DeriveBufferSize:audioFormat withPacketSize:pAudioCodecCtx->bit_rate/8 withSeconds:AUDIO_BUFFER_SECONDS];
                 
                 for (i = 0; i < AUDIO_BUFFER_QUANTITY; i++) {
-                    NSLog(@"%d packet capacity, %d byte capacity", (int)(pAudioCodecCtx->sample_rate * AUDIO_BUFFER_SECONDS / pAudioCodecCtx->frame_size + 1), (int)(pAudioCodecCtx->bit_rate * AUDIO_BUFFER_SECONDS / 8));
+                    NSLog(@"%d packet capacity, %d byte capacity", (int)(pAudioCodecCtx->sample_rate * AUDIO_BUFFER_SECONDS / pAudioCodecCtx->frame_size + 1), (int)vBufferSize);
                     
-                    // When I test, sometimes the data from network may loss information                    
-                    if(pAudioCodecCtx->bit_rate==0) {
-                       pAudioCodecCtx->bit_rate=0x100000;
-                    }
 
-                    if ((err = AudioQueueAllocateBufferWithPacketDescriptions(mQueue, vBufferSize, pAudioCodecCtx->sample_rate * AUDIO_BUFFER_SECONDS / pAudioCodecCtx->frame_size + 1, &mBuffers[i]))!=noErr) {
+                    if ((err = AudioQueueAllocateBufferWithPacketDescriptions(mQueue, vBufferSize, 1, &mBuffers[i]))!=noErr) {
                         NSLog(@"Error: Could not allocate audio queue buffer: %d", err);
                         AudioQueueDispose(mQueue, YES);
                         break;
@@ -333,6 +349,7 @@ void HandleOutputBuffer (
     int i;
 
     mIsRunning = true;
+    LastStartTime = 0;
     
     for(i=0;i<AUDIO_BUFFER_QUANTITY;i++)
     {
@@ -340,12 +357,12 @@ void HandleOutputBuffer (
     }
     // Decodes enqueued buffers in preparation for playback
     
-    eErr=AudioQueuePrime(mQueue, 0, NULL);
-    if(eErr!=noErr)
-    {
-        NSLog(@"AudioQueuePrime() error %ld", eErr);
-        return;
-    }
+//    eErr=AudioQueuePrime(mQueue, 0, NULL);
+//    if(eErr!=noErr)
+//    {
+//        NSLog(@"AudioQueuePrime() error %ld", eErr);
+//        return;
+//    }
     
     //
     eErr=AudioQueueStart(mQueue, nil);
@@ -357,21 +374,22 @@ void HandleOutputBuffer (
 
 -(void)Stop:(BOOL)bStopImmediatelly{
     
-    AudioQueueStop(mQueue, bStopImmediatelly);
-    for(int i=0;i<AUDIO_BUFFER_QUANTITY;i++)
-    {
-        AudioQueueFreeBuffer(mQueue, mBuffers[i]);
-    }
-    AudioQueueDispose(mQueue, bStopImmediatelly);
+    mIsRunning = false;
+    // TODO: some bug about mQueue
+    AudioQueueStop(mQueue, true);
+    
+    // Disposing of the audio queue also disposes of all its resources, including its buffers.
+    AudioQueueDispose(mQueue, true);
     
     if (pSwrCtx)   swr_free(&pSwrCtx);
     if (pAudioFrame)    avcodec_free_frame(&pAudioFrame);
     
+    NSLog(@"Dispose Apple Audio Queue");
 }
 
 
 -(int) getStatus{
-    if(mIsRunning==TRUE)
+    if(mIsRunning==true)
         return eAudioRunning;
     else
         return eAudioStop;
@@ -651,7 +669,7 @@ static void writeWavHeader(AVCodecContext *pAudioCodecCtx,AVFormatContext *pForm
     }
     
     
-    pSwrCtx = swr_alloc();
+    //pSwrCtx = swr_alloc();
     
     pSwrCtx = swr_alloc_set_opts(pSwrCtx,
                                  pAudioCodecCtx->channel_layout,
