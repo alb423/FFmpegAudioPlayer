@@ -26,9 +26,7 @@
         
 }
 
-
-
+@property (weak, nonatomic) IBOutlet UIButton *PlayAudioButton;
 - (IBAction)PlayAudio:(id)sender;
-- (IBAction)SaveAsWave:(id)sender;
 
 @end
