@@ -20,7 +20,7 @@
     
     double audioClock;
     int audioStream;
-    //AudioPacketQueue *apQueue;
+
     AudioPlayer *aPlayer;
     BOOL IsStop;
     BOOL IsLocalFile;

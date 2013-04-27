@@ -21,7 +21,9 @@
 //    can be decoded by FFMPEG(ok) or APPLE Hardware (ok)
 
 // 2. Local AAC (AAC_12khz_Mono_5.aac)
-//    can be decoded by FFMPEG (ok), by APPLE Hardware (fail).
+//    can be decoded by FFMPEG (ok), by APPLE Hardware (ok).
+//    We should remove ADTS header before copy data to Apple Audio Queue Services
+//    After remove ADTS header, many aac from rstp can be rendered correctly.
 
 // 3. Local PCM (PCM_MULAW) (test_mono_8000Hz_8bit_PCM.wav)
 //    can be decoded by FFMPEG (ok) or APPLE Hardware (ok)
@@ -29,6 +31,8 @@
 // 4. Remote PCM (should ok) need test??
 
 //@synthesize pSampleQueue;
+@synthesize bIsADTSAAS;
+
 
 -(int) putAVPacket: (AVPacket *) pkt
 {
@@ -117,7 +121,7 @@ void HandleOutputBuffer (
 //    while (([audioPacketQueue count]>0) && (buffer->mPacketDescriptionCount < buffer->mPacketDescriptionCapacity))
     if(buffer->mPacketDescriptionCount < buffer->mPacketDescriptionCapacity)
     {
-        //NSLog(@"aqueue:%d", [audioPacketQueue count]);
+        
         [audioPacketQueue getAVPacket: &AudioPacket];
         
 #if DECODE_AUDIO_BY_FFMPEG == 1 // decode by FFmpeg
@@ -150,61 +154,29 @@ void HandleOutputBuffer (
                     int data_size = av_samples_get_buffer_size(NULL, pAudioCodecCtx->channels,
                                                                pAVFrame1->nb_samples,pAudioCodecCtx->sample_fmt, 0);
                     
-                    if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= data_size/2)
+                    if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_FLTP)
+                    {
+                        data_size = data_size/2;
+                    }
+                    else if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_U8)
+                    {
+                        data_size = data_size*2;
+                    }
+                    
+                    if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= data_size)
                     {
                         @synchronized(self)
-                        {                            
-                            if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_FLTP)
+                        {
                             {
                                 int in_samples = pAVFrame1->nb_samples;
-
-
-                                //                                if (buffer->mPacketDescriptionCount == 0)
+                                //if (buffer->mPacketDescriptionCount == 0)
                                 {
                                     bufferStartTime.mSampleTime = LastStartTime+in_samples;
                                     bufferStartTime.mFlags = kAudioTimeStampSampleTimeValid;
                                     LastStartTime = bufferStartTime.mSampleTime;
                                 }
                                 
-                                uint8_t pTemp[8][data_size/2];
-                                uint8_t *pOut = (uint8_t *)&pTemp;
-                                outCount = swr_convert(pSwrCtx,
-                                                       (uint8_t **)(&pOut),
-                                                       in_samples,
-                                                       (const uint8_t **)pAVFrame1->extended_data,
-                                                       in_samples);
-                                
-                                if(outCount<0)
-                                    NSLog(@"swr_convert fail");
-                                                                
-                                    memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pOut, data_size/2);
-                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
-                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size/2;
-                                    buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
-                                    = 1;
-                                
-                                buffer->mAudioDataByteSize += data_size/2;
-                                //20130424
-// waveform
-//                                1. Compute and cache a reduction, by extracting maxima/minima from blocks of (say) 256 samples.
-//                                2. Render this data by drawing a vertical line between each max/min pair.
-//                                3. Clip the drawing to the damaged region wherever possible.
-                                
-//                                int vTmp=0, vSample=0;
-//                                for(int j=0;j<in_samples;j+=2)
-//                                {
-//                                    vTmp += pTemp[0][j]<<8+pTemp[0][j+1];
-//                                }
-//                                vTmp = vTmp/in_samples;
-//                                
-//                                NSMutableData *pTmpData = [[NSMutableData alloc] initWithBytes:&vTmp length:sizeof(int)];
-//                                [pSampleQueue addObject: pTmpData];
-                            }
-                            else if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_U8)
-                            {
-                                int in_samples = pAVFrame1->nb_samples;
-                                
-                                uint8_t pTemp[8][data_size*2];
+                                uint8_t pTemp[8][data_size];
                                 uint8_t *pOut = (uint8_t *)&pTemp;
                                 outCount = swr_convert(pSwrCtx,
                                                        (uint8_t **)(&pOut),
@@ -215,26 +187,31 @@ void HandleOutputBuffer (
                                 if(outCount<0)
                                     NSLog(@"swr_convert fail");
                                 
-                                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pOut, data_size*2);
-                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
-                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size*2;
-                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
-                                = 1;
-                                
-                                buffer->mAudioDataByteSize += data_size*2;
-                            }
-                            else
-                            {
-                                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pAVFrame1->extended_data[0], data_size);
+                                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pOut, data_size);
                                 buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
                                 buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size;
                                 buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
                                 = 1;
+                                
                                 buffer->mAudioDataByteSize += data_size;
-                            }
-                        };
-                        //buffer->mAudioDataByteSize += data_size/2;
-                        //buffer->mAudioDataByteSize += data_size;
+                                
+                                //20130424
+                                // waveform
+                                //                                1. Compute and cache a reduction, by extracting maxima/minima from blocks of (say) 256 samples.
+                                //                                2. Render this data by drawing a vertical line between each max/min pair.
+                                //                                3. Clip the drawing to the damaged region wherever possible.
+                                
+                                //                                int vTmp=0, vSample=0;
+                                //                                for(int j=0;j<in_samples;j+=2)
+                                //                                {
+                                //                                    vTmp += pTemp[0][j]<<8+pTemp[0][j+1];
+                                //                                }
+                                //                                vTmp = vTmp/in_samples;
+                                //                                
+                                //                                NSMutableData *pTmpData = [[NSMutableData alloc] initWithBytes:&vTmp length:sizeof(int)];
+                                //                                [pSampleQueue addObject: pTmpData];
+                            };
+                        }
                         buffer->mPacketDescriptionCount++;
                     }
                     gotFrame = 0;
@@ -248,15 +225,32 @@ void HandleOutputBuffer (
 
         if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= AudioPacket.size)
         {
+            int vOffsetOfADTS=0;
+            uint8_t *pHeader = &(AudioPacket.data[0]);
+            // 20130428
+            // remove ADTS header
             
-            // omit 0x0010 (AAC ID)
-            memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, AudioPacket.data, AudioPacket.size);
+            // TODO: how to know ADTS automatically??
+            // 
+            if((pHeader[0]==0xFF) &&(pHeader[1]==0xF9))
+                bIsADTSAAS=TRUE;
             
+            //if((AudioPacket.data[0][0]==0xFF) &&(AudioPacket.data[0][1]==0xF9))
+            if(bIsADTSAAS)
+            {
+                // Remove ADTS Header
+                vOffsetOfADTS = 7;
+            }
+            else
+            {
+                ; // do nothing
+            }
+            
+            memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, AudioPacket.data + vOffsetOfADTS, AudioPacket.size - vOffsetOfADTS);
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
-            buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = AudioPacket.size;
+            buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = AudioPacket.size - vOffsetOfADTS;
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket = aCodecCtx->frame_size;
-            
-            buffer->mAudioDataByteSize += AudioPacket.size;
+            buffer->mAudioDataByteSize += (AudioPacket.size-vOffsetOfADTS);
             buffer->mPacketDescriptionCount++;
         }
 #endif
@@ -323,15 +317,6 @@ void HandleOutputBuffer (
             case AV_CODEC_ID_AAC:
                 audioFormat.mFormatID = kAudioFormatMPEG4AAC;
                 audioFormat.mFormatFlags = kMPEG4Object_AAC_Main;
-//                kMPEG4Object_AAC_Main       = 1,
-//                kMPEG4Object_AAC_LC         = 2,
-//                kMPEG4Object_AAC_SSR        = 3,
-//                kMPEG4Object_AAC_LTP        = 4,
-//                kMPEG4Object_AAC_SBR        = 5,
-//                kMPEG4Object_AAC_Scalable   = 6,
-//                kMPEG4Object_TwinVQ         = 7,
-//                kMPEG4Object_CELP           = 8,
-//                kMPEG4Object_HVXC           = 9
                 break;
             case AV_CODEC_ID_PCM_ALAW:
                 audioFormat.mFormatID = kAudioFormatALaw;
@@ -351,7 +336,6 @@ void HandleOutputBuffer (
         if (audioFormat.mFormatID != -1)
         {
 #if DECODE_AUDIO_BY_FFMPEG == 1
-
             audioFormat.mFormatID = kAudioFormatLinearPCM;            
             audioFormat.mFormatFlags = kAudioFormatFlagIsBigEndian|kAudioFormatFlagIsAlignedHigh;
             audioFormat.mSampleRate = pAudioCodecCtx->sample_rate; // 12000
@@ -412,12 +396,11 @@ void HandleOutputBuffer (
                 audioFormat.mFramesPerPacket = pAudioCodecCtx->frame_size;
                 audioFormat.mBytesPerFrame = 0;
                 audioFormat.mChannelsPerFrame = pAudioCodecCtx->channels;
-                audioFormat.mBitsPerChannel = 0;
                 audioFormat.mBitsPerChannel = pAudioCodecCtx->bits_per_coded_sample;
                 audioFormat.mReserved = 0;
             }
             else if(audioFormat.mFormatID == kAudioFormatLinearPCM)
-            {
+            {   
                 // TODO: The flag should be assigned according different file type
                 // Current setting is used for AV_CODEC_ID_PCM_U8
                 if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_U8)

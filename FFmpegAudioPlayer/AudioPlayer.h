@@ -60,6 +60,7 @@
 -(int) getAVPacket :(AVPacket *) pkt;
 -(void)freeAVPacket:(AVPacket *) pkt;
 
+@property BOOL bIsADTSAAS;
 //@property NSMutableArray *pSampleQueue;
 
 @end
