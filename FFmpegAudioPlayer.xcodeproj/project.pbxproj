@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A305E6817264BA7008A747D /* Visualizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A305E6717264BA7008A747D /* Visualizer.m */; };
 		9A6674821721133300FB478C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674811721133300FB478C /* UIKit.framework */; };
 		9A6674841721133300FB478C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674831721133300FB478C /* Foundation.framework */; };
 		9A6674861721133300FB478C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674851721133300FB478C /* CoreGraphics.framework */; };
@@ -40,6 +41,8 @@
 		9A6674E317211FCB00FB478C /* AudioPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674C0172113AC00FB478C /* AudioPacketQueue.m */; };
 		9A6674E517211FCB00FB478C /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674C2172113AC00FB478C /* AudioPlayer.m */; };
 		9A6674E91721238700FB478C /* AAC_12khz_Mono_5.aac in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */; };
+		B20543361726DC6700BC6067 /* Visualizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A305E6717264BA7008A747D /* Visualizer.m */; };
+		B29584AD172BCF14007D0DCB /* test_mono_8000Hz_8bit_PCM.wav in Resources */ = {isa = PBXBuildFile; fileRef = B29584AC172BCF13007D0DCB /* test_mono_8000Hz_8bit_PCM.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +56,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9A305E6617264BA7008A747D /* Visualizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Visualizer.h; sourceTree = "<group>"; };
+		9A305E6717264BA7008A747D /* Visualizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Visualizer.m; sourceTree = "<group>"; };
 		9A66747E1721133300FB478C /* FFmpegAudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FFmpegAudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A6674811721133300FB478C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9A6674831721133300FB478C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -66,8 +71,8 @@
 		9A6674931721133300FB478C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9A6674951721133300FB478C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9A6674971721133300FB478C /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		9A66749A1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
-		9A66749D1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
+		9A66749A1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
+		9A66749D1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
 		9A66749F1721133300FB478C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		9A6674A01721133300FB478C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		9A6674A71721133400FB478C /* FFmpegAudioPlayerTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FFmpegAudioPlayerTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +97,7 @@
 		9A6674DB1721195700FB478C /* libbz2.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.1.0.dylib; path = usr/lib/libbz2.1.0.dylib; sourceTree = SDKROOT; };
 		9A6674DD1721196B00FB478C /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = AAC_12khz_Mono_5.aac; sourceTree = "<group>"; };
+		B29584AC172BCF13007D0DCB /* test_mono_8000Hz_8bit_PCM.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = test_mono_8000Hz_8bit_PCM.wav; path = ../test_mono_8000Hz_8bit_PCM.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,7 +172,10 @@
 		9A6674871721133300FB478C /* FFmpegAudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				B29584AC172BCF13007D0DCB /* test_mono_8000Hz_8bit_PCM.wav */,
 				9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */,
+				9A305E6617264BA7008A747D /* Visualizer.h */,
+				9A305E6717264BA7008A747D /* Visualizer.m */,
 				9A6674C61721156200FB478C /* ffmpeg */,
 				9A6674C5172113B300FB478C /* AudioPlay */,
 				9A6674901721133300FB478C /* AppDelegate.h */,
@@ -316,6 +325,7 @@
 				9A66749B1721133300FB478C /* MainStoryboard_iPhone.storyboard in Resources */,
 				9A66749E1721133300FB478C /* MainStoryboard_iPad.storyboard in Resources */,
 				9A6674E91721238700FB478C /* AAC_12khz_Mono_5.aac in Resources */,
+				B29584AD172BCF14007D0DCB /* test_mono_8000Hz_8bit_PCM.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,6 +360,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B20543361726DC6700BC6067 /* Visualizer.m in Sources */,
 				9A6674E317211FCB00FB478C /* AudioPacketQueue.m in Sources */,
 				9A6674E517211FCB00FB478C /* AudioPlayer.m in Sources */,
 				9A66748E1721133300FB478C /* main.m in Sources */,
@@ -365,6 +376,7 @@
 				9A6674B61721133400FB478C /* FFmpegAudioPlayerTests.m in Sources */,
 				9A6674C3172113AC00FB478C /* AudioPacketQueue.m in Sources */,
 				9A6674C4172113AC00FB478C /* AudioPlayer.m in Sources */,
+				9A305E6817264BA7008A747D /* Visualizer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,8 +451,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=armv7]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7-neon/include\"";
+				"HEADER_SEARCH_PATHS[arch=armv7s]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7s-neon/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/ffmpeg/compiled/i386/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				"LIBRARY_SEARCH_PATHS[arch=armv7]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7-neon/lib\"";
+				"LIBRARY_SEARCH_PATHS[arch=armv7s]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7s-neon/lib\"";
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ffmpeg/compiled/i386/lib\"",
@@ -469,8 +485,16 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=armv7]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7-neon/include\"";
+				"HEADER_SEARCH_PATHS[arch=armv7s]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7s-neon/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/ffmpeg/compiled/i386/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				"LIBRARY_SEARCH_PATHS[arch=armv7]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7-neon/lib\"";
+				"LIBRARY_SEARCH_PATHS[arch=armv7s]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7s-neon/lib\"";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"\"$(SRCROOT)/ffmpeg/compiled/i386/lib\"",
+				);
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -483,7 +507,8 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FFmpegAudioPlayer/FFmpegAudioPlayer-Prefix.pch";
-				"HEADER_SEARCH_PATHS[arch=armv7]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7s-neon/include\"";
+				HEADER_SEARCH_PATHS = "$(inheriented)";
+				"HEADER_SEARCH_PATHS[arch=armv7]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7-neon/include\"";
 				"HEADER_SEARCH_PATHS[arch=armv7s]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7s-neon/include\"";
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/ffmpeg/compiled/i386/include\"";
 				INFOPLIST_FILE = "FFmpegAudioPlayer/FFmpegAudioPlayer-Info.plist";
@@ -504,6 +529,10 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FFmpegAudioPlayer/FFmpegAudioPlayer-Prefix.pch";
+				HEADER_SEARCH_PATHS = "$(inheriented)";
+				"HEADER_SEARCH_PATHS[arch=armv7]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7-neon/include\"";
+				"HEADER_SEARCH_PATHS[arch=armv7s]" = "\"$(SRCROOT)/ffmpeg/compiled/armv7s-neon/include\"";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/ffmpeg/compiled/i386/include\"";
 				INFOPLIST_FILE = "FFmpegAudioPlayer/FFmpegAudioPlayer-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

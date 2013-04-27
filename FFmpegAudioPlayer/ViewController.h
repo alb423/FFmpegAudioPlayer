@@ -11,6 +11,7 @@
 #include "libswscale/swscale.h"
 #import "AudioPacketQueue.h"
 #import "AudioPlayer.h"
+#import "Visualizer.h"
 
 @interface ViewController : UIViewController {
 	AVFormatContext *pFormatCtx;    
@@ -19,11 +20,13 @@
     
     double audioClock;
     int audioStream;
-    AudioPacketQueue *apQueue;
+    //AudioPacketQueue *apQueue;
     AudioPlayer *aPlayer;
     BOOL IsStop;
     BOOL IsLocalFile;
-        
+    
+    Visualizer *visualizer;
+
 }
 
 @property (weak, nonatomic) IBOutlet UIButton *PlayAudioButton;

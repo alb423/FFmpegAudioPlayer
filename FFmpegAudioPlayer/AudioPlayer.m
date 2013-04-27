@@ -7,11 +7,43 @@
 //
 
 #import "AudioPlayer.h"
+
+#import "ViewController.h"
+
 @implementation AudioPlayer
 
 #define AUDIO_BUFFER_SECONDS 1
 #define AUDIO_BUFFER_QUANTITY 3
-#define DECODE_AUDIO_BY_FFMPEG 1
+#define DECODE_AUDIO_BY_FFMPEG 0
+
+// TODO: how to know the correct setting of AudioStreamBasicDescription from ffmpeg info??
+// 1. Remote AAC (BlackBerry.mp4)
+//    can be decoded by FFMPEG(ok) or APPLE Hardware (ok)
+
+// 2. Local AAC (AAC_12khz_Mono_5.aac)
+//    can be decoded by FFMPEG (ok), by APPLE Hardware (fail).
+
+// 3. Local PCM (PCM_MULAW) (test_mono_8000Hz_8bit_PCM.wav)
+//    can be decoded by FFMPEG (ok) or APPLE Hardware (ok)
+
+// 4. Remote PCM (should ok) need test??
+
+//@synthesize pSampleQueue;
+
+-(int) putAVPacket: (AVPacket *) pkt
+{
+    return [audioPacketQueue putAVPacket:pkt];
+}
+
+-(int) getAVPacket :(AVPacket *) pkt
+{
+    return  [audioPacketQueue getAVPacket:pkt];
+}
+
+-(void)freeAVPacket:(AVPacket *) pkt
+{
+    [audioPacketQueue freeAVPacket:pkt];
+}
 
 void HandleOutputBuffer (
                                 void                 *aqData,                 // 1
@@ -26,7 +58,6 @@ void HandleOutputBuffer (
 -(UInt32)putAVPacketsIntoAudioQueue:(AudioQueueBufferRef)audioQueueBuffer{
     AudioTimeStamp bufferStartTime={0};
     AVPacket AudioPacket={0};
-    int gotFrame = 0;
     static int vSlienceCount=0;
     
     AudioQueueBufferRef buffer=audioQueueBuffer;
@@ -41,7 +72,7 @@ void HandleOutputBuffer (
     }
     
     // TODO: remove debug log
-    NSLog(@"get 1 from apQueue: %d", [audioPacketQueue count]);
+    NSLog(@"get 1 from audioPacketQueue: %d", [audioPacketQueue count]);
     
     // If no data, we put silence audio
     // If AudioQueue buffer is empty, AudioQueue will stop. 
@@ -61,6 +92,8 @@ void HandleOutputBuffer (
         NSLog(@"Put Silence -- Need adjust circular buffer");
         @synchronized(self)
         {
+            // 20130427 set silence data to real silence
+            memset(buffer->mAudioData,0,1024*4);
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = vSilenceDataSize;
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket = 1;
@@ -88,8 +121,11 @@ void HandleOutputBuffer (
         [audioPacketQueue getAVPacket: &AudioPacket];
         
 #if DECODE_AUDIO_BY_FFMPEG == 1 // decode by FFmpeg
+        
+        if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= AudioPacket.size)
         {
             uint8_t *pktData=NULL;
+            int gotFrame = 0;            
             int pktSize;
             int len=0;
             AVCodecContext   *pAudioCodecCtx = aCodecCtx;
@@ -97,7 +133,8 @@ void HandleOutputBuffer (
             pktData=AudioPacket.data;
             pktSize=AudioPacket.size;
                       
-            while(pktSize>0) {
+            while(pktSize>0)
+            {
                 avcodec_get_frame_defaults(pAVFrame1);
                 @synchronized(self)
                 {
@@ -113,11 +150,12 @@ void HandleOutputBuffer (
                     int data_size = av_samples_get_buffer_size(NULL, pAudioCodecCtx->channels,
                                                                pAVFrame1->nb_samples,pAudioCodecCtx->sample_fmt, 0);
                     
-                    if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= data_size/2) {
+                    if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= data_size/2)
+                    {
                         @synchronized(self)
-                        {
-                            
-                            if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_FLTP){
+                        {                            
+                            if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_FLTP)
+                            {
                                 int in_samples = pAVFrame1->nb_samples;
 
 
@@ -127,7 +165,7 @@ void HandleOutputBuffer (
                                     bufferStartTime.mFlags = kAudioTimeStampSampleTimeValid;
                                     LastStartTime = bufferStartTime.mSampleTime;
                                 }
-#if 1
+                                
                                 uint8_t pTemp[8][data_size/2];
                                 uint8_t *pOut = (uint8_t *)&pTemp;
                                 outCount = swr_convert(pSwrCtx,
@@ -135,26 +173,6 @@ void HandleOutputBuffer (
                                                        in_samples,
                                                        (const uint8_t **)pAVFrame1->extended_data,
                                                        in_samples);
-#else
-                                // We can use av_samples_alloc() and av_freep() for sample buffer
-                                // But use a static array may be efficience
-                                uint8_t *pOut=NULL;
-                                int out_linesize=0;
-                                av_samples_alloc(&pOut,
-                                                 &out_linesize,
-                                                 pAudioFrame->channels,
-                                                 in_samples,
-                                                 AV_SAMPLE_FMT_S16,
-                                                 0
-                                                 );
-                                
-                                outCount = swr_convert(pSwrCtx,
-                                                       (uint8_t **)&pOut,
-                                                       in_samples,
-                                                       (const uint8_t **)pAudioFrame->extended_data,
-                                                       in_samples);
-                                // TODO: need free pOut
-#endif
                                 
                                 if(outCount<0)
                                     NSLog(@"swr_convert fail");
@@ -164,9 +182,59 @@ void HandleOutputBuffer (
                                     buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size/2;
                                     buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
                                     = 1;
+                                
+                                buffer->mAudioDataByteSize += data_size/2;
+                                //20130424
+// waveform
+//                                1. Compute and cache a reduction, by extracting maxima/minima from blocks of (say) 256 samples.
+//                                2. Render this data by drawing a vertical line between each max/min pair.
+//                                3. Clip the drawing to the damaged region wherever possible.
+                                
+//                                int vTmp=0, vSample=0;
+//                                for(int j=0;j<in_samples;j+=2)
+//                                {
+//                                    vTmp += pTemp[0][j]<<8+pTemp[0][j+1];
+//                                }
+//                                vTmp = vTmp/in_samples;
+//                                
+//                                NSMutableData *pTmpData = [[NSMutableData alloc] initWithBytes:&vTmp length:sizeof(int)];
+//                                [pSampleQueue addObject: pTmpData];
+                            }
+                            else if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_U8)
+                            {
+                                int in_samples = pAVFrame1->nb_samples;
+                                
+                                uint8_t pTemp[8][data_size*2];
+                                uint8_t *pOut = (uint8_t *)&pTemp;
+                                outCount = swr_convert(pSwrCtx,
+                                                       (uint8_t **)(&pOut),
+                                                       in_samples,
+                                                       (const uint8_t **)pAVFrame1->extended_data,
+                                                       in_samples);
+                                
+                                if(outCount<0)
+                                    NSLog(@"swr_convert fail");
+                                
+                                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pOut, data_size*2);
+                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
+                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size*2;
+                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
+                                = 1;
+                                
+                                buffer->mAudioDataByteSize += data_size*2;
+                            }
+                            else
+                            {
+                                memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, pAVFrame1->extended_data[0], data_size);
+                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
+                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = data_size;
+                                buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket
+                                = 1;
+                                buffer->mAudioDataByteSize += data_size;
                             }
                         };
-                        buffer->mAudioDataByteSize += data_size/2;
+                        //buffer->mAudioDataByteSize += data_size/2;
+                        //buffer->mAudioDataByteSize += data_size;
                         buffer->mPacketDescriptionCount++;
                     }
                     gotFrame = 0;
@@ -177,13 +245,9 @@ void HandleOutputBuffer (
         }
                 
 #else
-        if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= AudioPacket.size) {
-//            if (buffer->mPacketDescriptionCount == 0)
-//            {
-//                bufferStartTime.mSampleTime = LastStartTime+pAudioFrame->nb_samples;
-//                bufferStartTime.mFlags = kAudioTimeStampSampleTimeValid;
-//                LastStartTime = bufferStartTime.mSampleTime;
-//            }
+
+        if (buffer->mAudioDataBytesCapacity - buffer->mAudioDataByteSize >= AudioPacket.size)
+        {
             
             // omit 0x0010 (AAC ID)
             memcpy((uint8_t *)buffer->mAudioData + buffer->mAudioDataByteSize, AudioPacket.data, AudioPacket.size);
@@ -203,7 +267,7 @@ void HandleOutputBuffer (
     if (buffer->mPacketDescriptionCount > 0) {
         int err;
         
-#if 0  // CBR
+#if 1  // CBR
         if ((err = AudioQueueEnqueueBuffer(mQueue,
                                            buffer,
                                            0,
@@ -234,11 +298,20 @@ void HandleOutputBuffer (
     int vBufferSize=0;    
     int err;
     
-    audioPacketQueue = pInQueue;
+    //pSampleQueue = [[NSMutableArray alloc] init];
+    if(pInQueue)
+    {
+        audioPacketQueue = pInQueue;
+    }
+    else
+    {
+        audioPacketQueue = [[AudioPacketQueue alloc]initQueue];
+    }
     aCodecCtx = pAudioCodecCtx;
     pAudioFrame = avcodec_alloc_frame();
     
-    if (audio_index >= 0) {
+    if (audio_index >= 0)
+    {
         AudioStreamBasicDescription audioFormat;
         audioFormat.mFormatID = -1;
         audioFormat.mSampleRate = pAudioCodecCtx->sample_rate;
@@ -250,6 +323,15 @@ void HandleOutputBuffer (
             case AV_CODEC_ID_AAC:
                 audioFormat.mFormatID = kAudioFormatMPEG4AAC;
                 audioFormat.mFormatFlags = kMPEG4Object_AAC_Main;
+//                kMPEG4Object_AAC_Main       = 1,
+//                kMPEG4Object_AAC_LC         = 2,
+//                kMPEG4Object_AAC_SSR        = 3,
+//                kMPEG4Object_AAC_LTP        = 4,
+//                kMPEG4Object_AAC_SBR        = 5,
+//                kMPEG4Object_AAC_Scalable   = 6,
+//                kMPEG4Object_TwinVQ         = 7,
+//                kMPEG4Object_CELP           = 8,
+//                kMPEG4Object_HVXC           = 9
                 break;
             case AV_CODEC_ID_PCM_ALAW:
                 audioFormat.mFormatID = kAudioFormatALaw;
@@ -257,75 +339,131 @@ void HandleOutputBuffer (
             case AV_CODEC_ID_PCM_MULAW:
                 audioFormat.mFormatID = kAudioFormatULaw;
                 break;
+            case AV_CODEC_ID_PCM_U8:
+                audioFormat.mFormatID = kAudioFormatLinearPCM;
+                break;
             default:
                 NSLog(@"Error: audio format '%s' (%d) is not supported", pAudioCodecCtx->codec_name, pAudioCodecCtx->codec_id);
                 audioFormat.mFormatID = kAudioFormatAC3;
                 break;
         }
         
-        if (audioFormat.mFormatID != -1) {
-            
-#if DECODE_AUDIO_BY_FFMPEG == 1            
-            audioFormat.mFormatID = kAudioFormatLinearPCM;
+        if (audioFormat.mFormatID != -1)
+        {
+#if DECODE_AUDIO_BY_FFMPEG == 1
+
+            audioFormat.mFormatID = kAudioFormatLinearPCM;            
             audioFormat.mFormatFlags = kAudioFormatFlagIsBigEndian|kAudioFormatFlagIsAlignedHigh;
             audioFormat.mSampleRate = pAudioCodecCtx->sample_rate; // 12000
-            audioFormat.mBitsPerChannel = 16;//16;
+            audioFormat.mBitsPerChannel = pAudioCodecCtx->bits_per_coded_sample;//16;//16;
             audioFormat.mChannelsPerFrame = pAudioCodecCtx->channels; // 2
             audioFormat.mBytesPerFrame = 2*pAudioCodecCtx->channels;//4;
             audioFormat.mBytesPerPacket = 2*pAudioCodecCtx->channels;//4;
             audioFormat.mFramesPerPacket = 1;
             audioFormat.mReserved = 0;
-            
-            pSwrCtx = swr_alloc_set_opts(pSwrCtx,
-                                         pAudioCodecCtx->channel_layout,
-                                         AV_SAMPLE_FMT_S16,
-                                         pAudioCodecCtx->sample_rate,
-                                         pAudioCodecCtx->channel_layout,
-                                         AV_SAMPLE_FMT_FLTP,
-                                         pAudioCodecCtx->sample_rate,
-                                         0,
-                                         0);
-            if(swr_init(pSwrCtx)<0)
+
+            // The default audio data defined by APPLE is 16bits.
+            // If we got 32 or 8, we should covert it to 16bits
+            if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_FLTP) 
+            {   
+                pSwrCtx = swr_alloc_set_opts(pSwrCtx,
+                                             pAudioCodecCtx->channel_layout,
+                                             AV_SAMPLE_FMT_S16,
+                                             pAudioCodecCtx->sample_rate,
+                                             pAudioCodecCtx->channel_layout,
+                                             AV_SAMPLE_FMT_FLTP,
+                                             pAudioCodecCtx->sample_rate,
+                                             0,
+                                             0);
+                if(swr_init(pSwrCtx)<0)
+                {
+                    NSLog(@"swr_init() for AV_SAMPLE_FMT_FLTP fail");
+                    return nil;
+                }
+            }
+            else if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_U8)
+            {                    
+                pSwrCtx = swr_alloc_set_opts(pSwrCtx,
+                                             1,//pAudioCodecCtx->channel_layout,
+                                             AV_SAMPLE_FMT_S16,
+                                             pAudioCodecCtx->sample_rate,
+                                             1,//pAudioCodecCtx->channel_layout,
+                                             AV_SAMPLE_FMT_U8,
+                                             pAudioCodecCtx->sample_rate,
+                                             0,
+                                             0);
+                if(swr_init(pSwrCtx)<0)
+                {
+                    NSLog(@"swr_init()  fail");
+                    return nil;
+                }
+            }
+            else
             {
-                NSLog(@"swr_init()  fail");
-                return nil;
+                // do nothing now
+                // S16 to S16
+                ;
             }
             
 #else
-            audioFormat.mBytesPerPacket = 0;
-            audioFormat.mFramesPerPacket = pAudioCodecCtx->frame_size;
-            audioFormat.mBytesPerFrame = 0;
-            audioFormat.mChannelsPerFrame = pAudioCodecCtx->channels;
-            audioFormat.mBitsPerChannel = 0;
-
-            // For iron
-            audioFormat.mFormatID = kAudioFormatLinearPCM;
-            audioFormat.mFormatFlags = kAudioFormatFlagIsBigEndian|kAudioFormatFlagIsAlignedHigh;
-            audioFormat.mSampleRate = pAudioCodecCtx->sample_rate; // 12000
-            audioFormat.mBitsPerChannel = 16;//16;
-            audioFormat.mChannelsPerFrame = pAudioCodecCtx->channels; // 2
-            audioFormat.mBytesPerFrame = 2*pAudioCodecCtx->channels;//4;
-            audioFormat.mBytesPerPacket = 2*pAudioCodecCtx->channels;//4;
-            audioFormat.mFramesPerPacket = 1;
-            audioFormat.mReserved = 0;
+            if(audioFormat.mFormatID == kAudioFormatMPEG4AAC)
+            {
+                audioFormat.mBytesPerPacket = 0;
+                audioFormat.mFramesPerPacket = pAudioCodecCtx->frame_size;
+                audioFormat.mBytesPerFrame = 0;
+                audioFormat.mChannelsPerFrame = pAudioCodecCtx->channels;
+                audioFormat.mBitsPerChannel = 0;
+                audioFormat.mBitsPerChannel = pAudioCodecCtx->bits_per_coded_sample;
+                audioFormat.mReserved = 0;
+            }
+            else if(audioFormat.mFormatID == kAudioFormatLinearPCM)
+            {
+                // TODO: The flag should be assigned according different file type
+                // Current setting is used for AV_CODEC_ID_PCM_U8
+                if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_U8)
+                {
+                    audioFormat.mFormatFlags = kAudioFormatFlagIsPacked;
+                    audioFormat.mSampleRate = pAudioCodecCtx->sample_rate; // 12000
+                    audioFormat.mBitsPerChannel = pAudioCodecCtx->bits_per_coded_sample; //8;//16;
+                    audioFormat.mChannelsPerFrame = 1;//pAudioCodecCtx->channels;
+                    audioFormat.mBytesPerFrame = 1;
+                    audioFormat.mBytesPerPacket = 1;
+                    audioFormat.mFramesPerPacket = 1;
+                    audioFormat.mReserved = 0;
+                }
+                else if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_S16)
+                {
+                    audioFormat.mFormatFlags = kAudioFormatFlagIsPacked;
+                    audioFormat.mSampleRate = pAudioCodecCtx->sample_rate; // 12000
+                    audioFormat.mBitsPerChannel = pAudioCodecCtx->bits_per_coded_sample; //8;//16;
+                    audioFormat.mChannelsPerFrame = 1;
+                    audioFormat.mBytesPerFrame = 2;
+                    audioFormat.mBytesPerPacket = 2;
+                    audioFormat.mFramesPerPacket = 1;
+                    audioFormat.mReserved = 0;
+                }
+            }
+            
 #endif
-                        
             if ((err = AudioQueueNewOutput(&audioFormat, HandleOutputBuffer, (__bridge void *)(self), NULL, NULL, 0, &mQueue))!=noErr) {
                 NSLog(@"Error creating audio output queue: %d", err);
             }
-            else {
+            else
+            {
                 
-            // When I test, sometimes the data from network may loss information
-            if(pAudioCodecCtx->bit_rate==0) {
-                pAudioCodecCtx->bit_rate=0x100000;//0x50000;
-            }
-            if(pAudioCodecCtx->frame_size==0) {
-                pAudioCodecCtx->frame_size=1024;
-            }
+                // When I test, sometimes the data from network may loss information
+                // Below 2 checks if for CHT ipcam only
+                if(pAudioCodecCtx->bit_rate==0) {
+                    pAudioCodecCtx->bit_rate=0x100000;//0x50000;
+                }
+                if(pAudioCodecCtx->frame_size==0) {
+                    pAudioCodecCtx->frame_size=1024;
+                }
                 
-            vBufferSize = [self DeriveBufferSize:audioFormat withPacketSize:pAudioCodecCtx->bit_rate/8 withSeconds:AUDIO_BUFFER_SECONDS];
+                vBufferSize = [self DeriveBufferSize:audioFormat withPacketSize:pAudioCodecCtx->bit_rate/8 withSeconds:AUDIO_BUFFER_SECONDS];
                 
-                for (i = 0; i < AUDIO_BUFFER_QUANTITY; i++) {
+                for (i = 0; i < AUDIO_BUFFER_QUANTITY; i++)
+                {
                     NSLog(@"%d packet capacity, %d byte capacity", (int)(pAudioCodecCtx->sample_rate * AUDIO_BUFFER_SECONDS / pAudioCodecCtx->frame_size + 1), (int)vBufferSize);
                     
 
@@ -335,16 +473,9 @@ void HandleOutputBuffer (
                         break;
                       }
                     
-//                    if ((err = AudioQueueAllocateBufferWithPacketDescriptions(mQueue, pAudioCodecCtx->bit_rate * AUDIO_BUFFER_SECONDS / 8, pAudioCodecCtx->sample_rate * AUDIO_BUFFER_SECONDS / pAudioCodecCtx->frame_size + 1, &mBuffers[i]))!=noErr) {
-//                        NSLog(@"Error: Could not allocate audio queue buffer: %d", err);
-//                        AudioQueueDispose(mQueue, YES);
-//                        break;
-//                    }
-                    
-                    
-                }
+                } // end of for loop
             }
-        }
+        } // end of if (audioFormat.mFormatID != -1)
     }
     
     
@@ -368,13 +499,17 @@ void HandleOutputBuffer (
         [self putAVPacketsIntoAudioQueue:mBuffers[i]];
     }
     
+    // 20130427 Test temparally    
     // Decodes enqueued buffers in preparation for playback
+    
+#if DECODE_AUDIO_BY_FFMPEG == 0
     eErr=AudioQueuePrime(mQueue, 0, NULL);
     if(eErr!=noErr)
     {
         NSLog(@"AudioQueuePrime() error %ld", eErr);
-        return;
+        //return;
     }
+#endif
     
     //
     eErr=AudioQueueStart(mQueue, nil);

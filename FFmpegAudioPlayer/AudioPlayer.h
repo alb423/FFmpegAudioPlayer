@@ -42,9 +42,10 @@
     AVFrame          *pAudioFrame;
     SwrContext       *pSwrCtx;
     
-    long LastStartTime;    
+    long LastStartTime;
+    
+    //NSMutableArray *pSampleQueue;
 }
-
 
 -(id)initAudio: (AudioPacketQueue *) audioQueue withCodecCtx:(AVCodecContext *) aCodecCtx;
 -(id)initForDecodeAudioFile: (NSString *) FilePathIn ToPCMFile:(NSString *) FilePathOut;
@@ -54,4 +55,11 @@
 - (void) PrintFileStreamBasicDescription:(NSString *) FilePath;
 -(void) decodeAudioFile: (NSString *) FilePathIn ToPCMFile:(NSString *) FilePathOut withCodecCtx: (AVCodecContext *)pAudioCodecCtx withFormat:(AVFormatContext *) pFormatCtx withStreamIdx :(int) audioStream;
 -(int) getStatus;
+
+-(int) putAVPacket: (AVPacket *) pkt;
+-(int) getAVPacket :(AVPacket *) pkt;
+-(void)freeAVPacket:(AVPacket *) pkt;
+
+//@property NSMutableArray *pSampleQueue;
+
 @end
