@@ -41,7 +41,10 @@
 		9A6674E317211FCB00FB478C /* AudioPacketQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674C0172113AC00FB478C /* AudioPacketQueue.m */; };
 		9A6674E517211FCB00FB478C /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674C2172113AC00FB478C /* AudioPlayer.m */; };
 		9A6674E91721238700FB478C /* AAC_12khz_Mono_5.aac in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */; };
+		9A7F6D44174B3E6100BF347D /* 19_Austria.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */; };
+		9AF84B1C172FB95700A56189 /* output.pcm in Resources */ = {isa = PBXBuildFile; fileRef = 9AF84B1B172FB95700A56189 /* output.pcm */; };
 		B20543361726DC6700BC6067 /* Visualizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A305E6717264BA7008A747D /* Visualizer.m */; };
+		B2070F42172D766C00745C49 /* AudioUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B2070F41172D766C00745C49 /* AudioUtilities.m */; };
 		B29584AD172BCF14007D0DCB /* test_mono_8000Hz_8bit_PCM.wav in Resources */ = {isa = PBXBuildFile; fileRef = B29584AC172BCF13007D0DCB /* test_mono_8000Hz_8bit_PCM.wav */; };
 /* End PBXBuildFile section */
 
@@ -97,6 +100,10 @@
 		9A6674DB1721195700FB478C /* libbz2.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.1.0.dylib; path = usr/lib/libbz2.1.0.dylib; sourceTree = SDKROOT; };
 		9A6674DD1721196B00FB478C /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = AAC_12khz_Mono_5.aac; sourceTree = "<group>"; };
+		9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 19_Austria.mp3; sourceTree = "<group>"; };
+		9AF84B1B172FB95700A56189 /* output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = output.pcm; sourceTree = "<group>"; };
+		B2070F40172D766C00745C49 /* AudioUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioUtilities.h; sourceTree = "<group>"; };
+		B2070F41172D766C00745C49 /* AudioUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioUtilities.m; sourceTree = "<group>"; };
 		B29584AC172BCF13007D0DCB /* test_mono_8000Hz_8bit_PCM.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = test_mono_8000Hz_8bit_PCM.wav; path = ../test_mono_8000Hz_8bit_PCM.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -172,6 +179,8 @@
 		9A6674871721133300FB478C /* FFmpegAudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */,
+				9AF84B1B172FB95700A56189 /* output.pcm */,
 				B29584AC172BCF13007D0DCB /* test_mono_8000Hz_8bit_PCM.wav */,
 				9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */,
 				9A305E6617264BA7008A747D /* Visualizer.h */,
@@ -225,6 +234,8 @@
 		9A6674C5172113B300FB478C /* AudioPlay */ = {
 			isa = PBXGroup;
 			children = (
+				B2070F40172D766C00745C49 /* AudioUtilities.h */,
+				B2070F41172D766C00745C49 /* AudioUtilities.m */,
 				9A6674BF172113AC00FB478C /* AudioPacketQueue.h */,
 				9A6674C0172113AC00FB478C /* AudioPacketQueue.m */,
 				9A6674C1172113AC00FB478C /* AudioPlayer.h */,
@@ -326,6 +337,7 @@
 				9A66749E1721133300FB478C /* MainStoryboard_iPad.storyboard in Resources */,
 				9A6674E91721238700FB478C /* AAC_12khz_Mono_5.aac in Resources */,
 				B29584AD172BCF14007D0DCB /* test_mono_8000Hz_8bit_PCM.wav in Resources */,
+				9A7F6D44174B3E6100BF347D /* 19_Austria.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,6 +346,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A6674B31721133400FB478C /* InfoPlist.strings in Resources */,
+				9AF84B1C172FB95700A56189 /* output.pcm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +379,7 @@
 				9A66748E1721133300FB478C /* main.m in Sources */,
 				9A6674921721133300FB478C /* AppDelegate.m in Sources */,
 				9A6674A11721133300FB478C /* ViewController.m in Sources */,
+				B2070F42172D766C00745C49 /* AudioUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

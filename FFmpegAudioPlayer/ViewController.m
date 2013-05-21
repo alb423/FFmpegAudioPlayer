@@ -6,14 +6,18 @@
 //  Copyright (c) 2013年 Liao KuoHsun. All rights reserved.
 //
 
+
 #import "ViewController.h"
 #import "AudioPlayer.h"
-
+#import "AudioUtilities.h"
 #define WAV_FILE_NAME @"1.wav"
 
 // If we read too fast, the size of aqQueue will increased quickly.
 // If we read too slow, .
-#define LOCAL_FILE_DELAY_MS 80
+//#define LOCAL_FILE_DELAY_MS 80
+
+// For 19_Austria.mp3
+#define LOCAL_FILE_DELAY_MS 25
 
 // Reference for AAC test file
 // http://download.wavetlan.com/SVV/Media/HTTP/http-aac.htm
@@ -21,17 +25,19 @@
 
 
 // === LOCAL File ===
-//#define AUDIO_TEST_PATH @"AAC_12khz_Mono_5.aac"
+//#define AUDIO_TEST_PATH @"19_Austria.mp3"
+#define AUDIO_TEST_PATH @"AAC_12khz_Mono_5.aac"
 //#define AUDIO_TEST_PATH @"test_mono_8000Hz_8bit_PCM.wav"
+//#define AUDIO_TEST_PATH @"output.pcm"
 
 //#define AUDIO_TEST_PATH @"rtsp://61.219.8.26/relay/cam8888032101/cam8888032101.sdp"
 //#define AUDIO_TEST_PATH @"rtsp://61.219.8.26/relay/cam8888032111/cam8888032111.sdp"
 
 // === Valid RTSP URL ===
 //#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/BlackBerry.3gp"
+//#define AUDIO_TEST_PATH @"rtsp://192.168.82.59/stream1" //cht fw
 
-
-#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/BlackBerry.mp4"
+//#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/BlackBerry.mp4"
 //#define AUDIO_TEST_PATH @"rtsp://mm2.pcslab.com/mm/7h800.mp4"
 //#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/The_Simpsons_S19E05_Treehouse_of_Horror_XVIII.3GP"
 
@@ -150,7 +156,7 @@
     [self stopFFmpegAudioStream];
     
     // Stop Consumer
-    [aPlayer Stop:FALSE];
+    [aPlayer Stop:TRUE];
     //aPlayer = nil;    
     
     [self destroyFFmpegAudioStream];
@@ -163,7 +169,14 @@
 }
 
 - (IBAction)PlayAudio:(id)sender {
+    
     UIButton *vBn = (UIButton *)sender;
+
+#if 0
+    [AudioUtilities initForDecodeAudioFile:AUDIO_TEST_PATH ToPCMFile:@"/Users/liaokuohsun/1.wav"];
+    NSLog(@"Save file to /Users/liaokuohsun/1.wav");
+    return;
+#endif
     
     CGRect vxRect;
     vxRect.origin.x = 10;
@@ -215,7 +228,7 @@
                     // TODO: how to know ADTS automatically??
                     // Currently, we guess from the first 2 bytes of audio packet.
                     // We should know these information from SDP or somewhere else.
-                    // aPlayer.bIsADTSAAS = TRUE;
+                    //aPlayer.vAACType = eAAC_ADTS;
                     [aPlayer Play];
                 }
                 
@@ -238,6 +251,14 @@
     
     NSString *pAudioInPath;
     AVCodec  *pAudioCodec;
+    
+    // 20130428 Test here
+    {
+        // Test sample :http://m.oschina.net/blog/89784
+        uint8_t pInput[] = {0x0ff,0x0f9,0x058,0x80,0,0x1f,0xfc};
+        tAACADTSHeaderInfo vxADTSHeader={0};        
+        [AudioUtilities parseAACADTSHeader:pInput ToHeader:(tAACADTSHeaderInfo *) &vxADTSHeader];
+    }
     
     if( strncmp([AUDIO_TEST_PATH UTF8String], "rtsp", 4)==0)
     {

@@ -14,7 +14,7 @@
 
 #define AUDIO_BUFFER_SECONDS 1
 #define AUDIO_BUFFER_QUANTITY 3
-#define DECODE_AUDIO_BY_FFMPEG 0
+#define DECODE_AUDIO_BY_FFMPEG 1
 
 // TODO: how to know the correct setting of AudioStreamBasicDescription from ffmpeg info??
 // 1. Remote AAC (BlackBerry.mp4)
@@ -365,6 +365,23 @@ void HandleOutputBuffer (
                     return nil;
                 }
             }
+            if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_S16P)
+            {
+                pSwrCtx = swr_alloc_set_opts(pSwrCtx,
+                                             pAudioCodecCtx->channel_layout,
+                                             AV_SAMPLE_FMT_S16,
+                                             pAudioCodecCtx->sample_rate,
+                                             pAudioCodecCtx->channel_layout,
+                                             AV_SAMPLE_FMT_S16P,
+                                             pAudioCodecCtx->sample_rate,
+                                             0,
+                                             0);
+                if(swr_init(pSwrCtx)<0)
+                {
+                    NSLog(@"swr_init() for AV_SAMPLE_FMT_S16P fail");
+                    return nil;
+                }
+            }
             else if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_U8)
             {                    
                 pSwrCtx = swr_alloc_set_opts(pSwrCtx,
@@ -391,6 +408,15 @@ void HandleOutputBuffer (
             
 #else
             if(audioFormat.mFormatID == kAudioFormatMPEG4AAC)
+            {
+                audioFormat.mBytesPerPacket = 0;
+                audioFormat.mFramesPerPacket = pAudioCodecCtx->frame_size;
+                audioFormat.mBytesPerFrame = 0;
+                audioFormat.mChannelsPerFrame = pAudioCodecCtx->channels;
+                audioFormat.mBitsPerChannel = pAudioCodecCtx->bits_per_coded_sample;
+                audioFormat.mReserved = 0;
+            }
+            else if(audioFormat.mFormatID == kAudioFormatMPEGLayer3)
             {
                 audioFormat.mBytesPerPacket = 0;
                 audioFormat.mFramesPerPacket = pAudioCodecCtx->frame_size;
