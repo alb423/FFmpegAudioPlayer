@@ -1,0 +1,91 @@
+// !$*UTF8*$!
+{
+	9A6674761721133300FB478C /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = B2A2FA921726DB87003F895A /* FFmpegAudioPlayer */;
+		activeTarget = 9A66747D1721133300FB478C /* FFmpegAudioPlayer */;
+		codeSenseManager = B2A2FAA11726DB8A003F895A /* Code sense */;
+		executables = (
+			B2A2FA921726DB87003F895A /* FFmpegAudioPlayer */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					379,
+					20,
+					48.16259765625,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 388422536;
+			PBXWorkspaceStateSaveDate = 388422536;
+		};
+		sourceControlManager = B2A2FAA01726DB8A003F895A /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	9A66747D1721133300FB478C /* FFmpegAudioPlayer */ = {
+		activeExec = 0;
+		executables = (
+			B2A2FA921726DB87003F895A /* FFmpegAudioPlayer */,
+		);
+	};
+	9A6674A61721133400FB478C /* FFmpegAudioPlayerTests */ = {
+		activeExec = 0;
+	};
+	B2A2FA921726DB87003F895A /* FFmpegAudioPlayer */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = FFmpegAudioPlayer;
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	B2A2FAA01726DB8A003F895A /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	B2A2FAA11726DB8A003F895A /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+}
