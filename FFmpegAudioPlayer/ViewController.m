@@ -33,8 +33,6 @@
 
 // === Valid RTSP URL ===
 //#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/BlackBerry.3gp"
-//#define AUDIO_TEST_PATH @"rtsp://192.168.82.59/stream1" //cht fw
-
 //#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/BlackBerry.mp4"
 //#define AUDIO_TEST_PATH @"rtsp://mm2.pcslab.com/mm/7h800.mp4"
 //#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/The_Simpsons_S19E05_Treehouse_of_Horror_XVIII.3GP"
