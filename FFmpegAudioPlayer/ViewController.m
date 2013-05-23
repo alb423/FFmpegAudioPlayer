@@ -30,8 +30,6 @@
 //#define AUDIO_TEST_PATH @"test_mono_8000Hz_8bit_PCM.wav"
 //#define AUDIO_TEST_PATH @"output.pcm"
 
-//#define AUDIO_TEST_PATH @"rtsp://61.219.8.26/relay/cam8888032101/cam8888032101.sdp"
-//#define AUDIO_TEST_PATH @"rtsp://61.219.8.26/relay/cam8888032111/cam8888032111.sdp"
 
 // === Valid RTSP URL ===
 //#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/BlackBerry.3gp"
@@ -52,12 +50,6 @@
 
 // ("wma" audio format is not supported)
 // #define AUDIO_TEST_PATH @"rtsp://media.iwant-in.net/pop"
-
-
-// Cht test
-//#define AUDIO_TEST_PATH @"rtsp://192.168.10.8/stream1" //cht fw
-//#define RTSP_URL @"rtsp://192.168.10.9/stream1"  //old fw
-
 
 
 @interface ViewController (){
