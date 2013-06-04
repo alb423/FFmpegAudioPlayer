@@ -223,9 +223,9 @@
                 [self readFFmpegAudioFrameAndDecode];
             });
             
-            // TODO: Currently We set sleep 2 seconds for buffer data
+            // TODO: Currently We set sleep 5 seconds for buffer data
             // We should caculate the audio timestamp to make sure the buffer duration.
-            sleep(2);
+            sleep(5);
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self stopAlertView:nil];
             });

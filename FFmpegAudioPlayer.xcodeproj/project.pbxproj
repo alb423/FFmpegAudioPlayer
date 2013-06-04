@@ -17,8 +17,6 @@
 		9A6674941721133300FB478C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674931721133300FB478C /* Default.png */; };
 		9A6674961721133300FB478C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674951721133300FB478C /* Default@2x.png */; };
 		9A6674981721133300FB478C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674971721133300FB478C /* Default-568h@2x.png */; };
-		9A66749B1721133300FB478C /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674991721133300FB478C /* MainStoryboard_iPhone.storyboard */; };
-		9A66749E1721133300FB478C /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A66749C1721133300FB478C /* MainStoryboard_iPad.storyboard */; };
 		9A6674A11721133300FB478C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674A01721133300FB478C /* ViewController.m */; };
 		9A6674A91721133400FB478C /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674A81721133400FB478C /* SenTestingKit.framework */; };
 		9A6674AA1721133400FB478C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6674811721133300FB478C /* UIKit.framework */; };
@@ -42,6 +40,10 @@
 		9A6674E517211FCB00FB478C /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6674C2172113AC00FB478C /* AudioPlayer.m */; };
 		9A6674E91721238700FB478C /* AAC_12khz_Mono_5.aac in Resources */ = {isa = PBXBuildFile; fileRef = 9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */; };
 		9A7F6D44174B3E6100BF347D /* 19_Austria.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */; };
+		9A87A154175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A87A150175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard */; };
+		9A87A155175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A87A152175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard */; };
+		9A87A158175DA5D900C91DA6 /* WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA in Resources */ = {isa = PBXBuildFile; fileRef = 9A87A156175DA5D900C91DA6 /* WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA */; };
+		9A87A159175DA5D900C91DA6 /* WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA in Resources */ = {isa = PBXBuildFile; fileRef = 9A87A157175DA5D900C91DA6 /* WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA */; };
 		9AF84B1C172FB95700A56189 /* output.pcm in Resources */ = {isa = PBXBuildFile; fileRef = 9AF84B1B172FB95700A56189 /* output.pcm */; };
 		B20543361726DC6700BC6067 /* Visualizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A305E6717264BA7008A747D /* Visualizer.m */; };
 		B2070F42172D766C00745C49 /* AudioUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B2070F41172D766C00745C49 /* AudioUtilities.m */; };
@@ -74,8 +76,6 @@
 		9A6674931721133300FB478C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		9A6674951721133300FB478C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		9A6674971721133300FB478C /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		9A66749A1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
-		9A66749D1721133300FB478C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
 		9A66749F1721133300FB478C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		9A6674A01721133300FB478C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		9A6674A71721133400FB478C /* FFmpegAudioPlayerTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FFmpegAudioPlayerTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,6 +101,10 @@
 		9A6674DD1721196B00FB478C /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		9A6674E81721238700FB478C /* AAC_12khz_Mono_5.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = AAC_12khz_Mono_5.aac; sourceTree = "<group>"; };
 		9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 19_Austria.mp3; sourceTree = "<group>"; };
+		9A87A151175DA51B00C91DA6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
+		9A87A153175DA51B00C91DA6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
+		9A87A156175DA5D900C91DA6 /* WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA"; sourceTree = "<group>"; };
+		9A87A157175DA5D900C91DA6 /* WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA"; sourceTree = "<group>"; };
 		9AF84B1B172FB95700A56189 /* output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = output.pcm; sourceTree = "<group>"; };
 		B2070F40172D766C00745C49 /* AudioUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioUtilities.h; sourceTree = "<group>"; };
 		B2070F41172D766C00745C49 /* AudioUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioUtilities.m; sourceTree = "<group>"; };
@@ -179,6 +183,10 @@
 		9A6674871721133300FB478C /* FFmpegAudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				9A87A150175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard */,
+				9A87A156175DA5D900C91DA6 /* WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA */,
+				9A87A157175DA5D900C91DA6 /* WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA */,
+				9A87A152175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard */,
 				9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */,
 				9AF84B1B172FB95700A56189 /* output.pcm */,
 				B29584AC172BCF13007D0DCB /* test_mono_8000Hz_8bit_PCM.wav */,
@@ -189,8 +197,6 @@
 				9A6674C5172113B300FB478C /* AudioPlay */,
 				9A6674901721133300FB478C /* AppDelegate.h */,
 				9A6674911721133300FB478C /* AppDelegate.m */,
-				9A6674991721133300FB478C /* MainStoryboard_iPhone.storyboard */,
-				9A66749C1721133300FB478C /* MainStoryboard_iPad.storyboard */,
 				9A66749F1721133300FB478C /* ViewController.h */,
 				9A6674A01721133300FB478C /* ViewController.m */,
 				9A6674881721133300FB478C /* Supporting Files */,
@@ -333,11 +339,13 @@
 				9A6674941721133300FB478C /* Default.png in Resources */,
 				9A6674961721133300FB478C /* Default@2x.png in Resources */,
 				9A6674981721133300FB478C /* Default-568h@2x.png in Resources */,
-				9A66749B1721133300FB478C /* MainStoryboard_iPhone.storyboard in Resources */,
-				9A66749E1721133300FB478C /* MainStoryboard_iPad.storyboard in Resources */,
 				9A6674E91721238700FB478C /* AAC_12khz_Mono_5.aac in Resources */,
 				B29584AD172BCF14007D0DCB /* test_mono_8000Hz_8bit_PCM.wav in Resources */,
 				9A7F6D44174B3E6100BF347D /* 19_Austria.mp3 in Resources */,
+				9A87A154175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard in Resources */,
+				9A87A155175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard in Resources */,
+				9A87A158175DA5D900C91DA6 /* WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA in Resources */,
+				9A87A159175DA5D900C91DA6 /* WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,28 +421,28 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		9A6674991721133300FB478C /* MainStoryboard_iPhone.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9A66749A1721133300FB478C /* en */,
-			);
-			name = MainStoryboard_iPhone.storyboard;
-			sourceTree = "<group>";
-		};
-		9A66749C1721133300FB478C /* MainStoryboard_iPad.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9A66749D1721133300FB478C /* en */,
-			);
-			name = MainStoryboard_iPad.storyboard;
-			sourceTree = "<group>";
-		};
 		9A6674B11721133400FB478C /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				9A6674B21721133400FB478C /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		9A87A150175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9A87A151175DA51B00C91DA6 /* en */,
+			);
+			name = MainStoryboard_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		9A87A152175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9A87A153175DA51B00C91DA6 /* en */,
+			);
+			name = MainStoryboard_iPhone.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

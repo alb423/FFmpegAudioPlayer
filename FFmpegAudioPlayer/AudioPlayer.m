@@ -83,7 +83,7 @@ void HandleOutputBuffer (
     // If AudioQueue buffer is empty, AudioQueue will stop. 
     if([audioPacketQueue count]==0)
     {
-        int err, vSilenceDataSize = 1024*16;
+        int err, vSilenceDataSize = 1024*64;
 #if 0
         if(vSlienceCount>10)
         {
@@ -98,7 +98,7 @@ void HandleOutputBuffer (
         @synchronized(self)
         {
             // 20130427 set silence data to real silence
-            memset(buffer->mAudioData,0,1024*4);
+            memset(buffer->mAudioData,0,vSilenceDataSize);
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mStartOffset = buffer->mAudioDataByteSize;
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mDataByteSize = vSilenceDataSize;
             buffer->mPacketDescriptions[buffer->mPacketDescriptionCount].mVariableFramesInPacket = 1;
@@ -479,7 +479,7 @@ void HandleOutputBuffer (
                 if(pAudioCodecCtx->bit_rate==0) {
                     pAudioCodecCtx->bit_rate=0x100000;//0x50000;
                 }
-#if 0
+#if 1
                 if(pAudioCodecCtx->frame_size==0) {
                     pAudioCodecCtx->frame_size=1024;
                 }
