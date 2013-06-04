@@ -48,11 +48,8 @@
 }
 
 -(id)initAudio: (AudioPacketQueue *) audioQueue withCodecCtx:(AVCodecContext *) aCodecCtx;
--(id)initForDecodeAudioFile: (NSString *) FilePathIn ToPCMFile:(NSString *) FilePathOut;
-
 - (void) Play;
 - (void) Stop:(BOOL)bStopImmediatelly;
-- (void) PrintFileStreamBasicDescription:(NSString *) FilePath;
 -(void) decodeAudioFile: (NSString *) FilePathIn ToPCMFile:(NSString *) FilePathOut withCodecCtx: (AVCodecContext *)pAudioCodecCtx withFormat:(AVFormatContext *) pFormatCtx withStreamIdx :(int) audioStream;
 -(int) getStatus;
 

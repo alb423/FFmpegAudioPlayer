@@ -26,10 +26,21 @@
 
 // === LOCAL File ===
 //#define AUDIO_TEST_PATH @"19_Austria.mp3"
-#define AUDIO_TEST_PATH @"AAC_12khz_Mono_5.aac"
+//#define AUDIO_TEST_PATH @"AAC_12khz_Mono_5.aac"
 //#define AUDIO_TEST_PATH @"test_mono_8000Hz_8bit_PCM.wav"
 //#define AUDIO_TEST_PATH @"output.pcm"
+    
+// WMA Sample plz reference http://download.wavetlan.com/SVV/Media/HTTP/WMA/WindowsMediaPlayer/
+//#define AUDIO_TEST_PATH @"WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA"
+//#define AUDIO_TEST_PATH @"WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA"
 
+// === MMS URL ===
+// plz reference http://alyzq.com/?p=777
+// Stereo, 64kbps, 48000Hz
+#define AUDIO_TEST_PATH @"mms://bcr.media.hinet.net/RA000009"
+//#define AUDIO_TEST_PATH @"mms://alive.rbc.cn/fm876"
+// A error URL
+//#define AUDIO_TEST_PATH @"mms://211.89.225.141/cnr001"
 
 // === Valid RTSP URL ===
 //#define AUDIO_TEST_PATH @"rtsp://216.16.231.19/BlackBerry.3gp"
@@ -206,8 +217,26 @@
             
 
             aPlayer = [[AudioPlayer alloc]initAudio:nil withCodecCtx:(AVCodecContext *) pAudioCodecCtx];
+
+#if 1
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+                [self readFFmpegAudioFrameAndDecode];
+            });
             
-            [visualizer setSampleRate:pAudioCodecCtx->sample_rate];
+            // TODO: Currently We set sleep 2 seconds for buffer data
+            // We should caculate the audio timestamp to make sure the buffer duration.
+            sleep(2);
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self stopAlertView:nil];
+            });
+            
+            if([aPlayer getStatus]!=eAudioRunning)
+            {
+                [aPlayer Play];
+            }
+            
+#else
+            //[visualizer setSampleRate:pAudioCodecCtx->sample_rate];
             // Dismiss alertview in main thread
             // Run Audio Player in main thread
             dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -215,10 +244,6 @@
                 sleep(2);
                 if([aPlayer getStatus]!=eAudioRunning)
                 {
-                    // TODO: how to know ADTS automatically??
-                    // Currently, we guess from the first 2 bytes of audio packet.
-                    // We should know these information from SDP or somewhere else.
-                    //aPlayer.vAACType = eAAC_ADTS;
                     [aPlayer Play];
                 }
                 
@@ -230,9 +255,8 @@
             
             // Read ffmpeg audio packet in another thread
             [self readFFmpegAudioFrameAndDecode];
-                        
+#endif
             [vBn setTitle:@"Play" forState:UIControlStateNormal];
-            // wait, so that packet queue will buffer audio data for playing            
         });
     }
 }
@@ -253,6 +277,20 @@
     if( strncmp([AUDIO_TEST_PATH UTF8String], "rtsp", 4)==0)
     {
         pAudioInPath = AUDIO_TEST_PATH;
+        IsLocalFile = FALSE;
+    }
+    else if( strncmp([AUDIO_TEST_PATH UTF8String], "mms:", 4)==0)
+    {
+        pAudioInPath = AUDIO_TEST_PATH;
+        //replay "mms:" to "mmsh:" or "mmst:"
+        pAudioInPath = [pAudioInPath stringByReplacingOccurrencesOfString:@"mms:" withString:@"mmsh:"];
+        NSLog(@"pAudioPath=%@", pAudioInPath);
+        IsLocalFile = FALSE;
+    }
+    else if( strncmp([AUDIO_TEST_PATH UTF8String], "mmsh", 4)==0)
+    {
+        pAudioInPath = AUDIO_TEST_PATH;
+        // TODO: replay "mms:" to "mmsh:" or "mmst:"
         IsLocalFile = FALSE;
     }
     else
@@ -280,9 +318,26 @@
     
     // Open video file
     if(avformat_open_input(&pFormatCtx, [pAudioInPath cStringUsingEncoding:NSASCIIStringEncoding], NULL, &opts) != 0) {
-        av_log(NULL, AV_LOG_ERROR, "Couldn't open file\n");
-        return FALSE;
+
+        if( strncmp([AUDIO_TEST_PATH UTF8String], "mmsh", 4)==0)
+        {
+            av_log(NULL, AV_LOG_ERROR, "Couldn't open mmsh connection\n");
+            [pAudioInPath stringByReplacingOccurrencesOfString:@"mmsh:" withString:@"mmst:"];
+            if(avformat_open_input(&pFormatCtx, [pAudioInPath cStringUsingEncoding:NSASCIIStringEncoding], NULL, &opts) != 0)
+            {
+                av_log(NULL, AV_LOG_ERROR, "Couldn't open mmst connection\n");
+                return FALSE;
+            }
+        }
+        else
+        {
+            av_log(NULL, AV_LOG_ERROR, "Couldn't open file\n");            
+            return FALSE;
+        }
     }
+
+
+    
 	av_dict_free(&opts);
 #else // UDP
     if(avformat_open_input(&pFormatCtx, [pAudioInPath cStringUsingEncoding:NSASCIIStringEncoding], NULL, NULL) != 0) {

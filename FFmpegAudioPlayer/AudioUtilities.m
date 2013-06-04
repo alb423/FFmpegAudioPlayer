@@ -83,6 +83,7 @@
         ;
 }
 
+// TODO in the future for audio recording
 - (uint8_t *) generateAACADTSHeader:(uint8_t *) pInOut ToHeader:(tAACADTSHeaderInfo *) pADTSHeader
 {
     if(pADTSHeader==nil)
@@ -123,17 +124,15 @@
         return 0;
 }
 
-
-
-#pragma mark - Test tool of Audio
-+ (void) PrintFileStreamBasicDescription:(NSString *) filePath{
++ (void) PrintFileStreamBasicDescriptionFromFile:(NSString *) filePath
+{
     OSStatus status;
     UInt32 size;
     AudioFileID audioFile;
     AudioStreamBasicDescription dataFormat;
     
     CFURLRef URL = (__bridge CFURLRef)[NSURL fileURLWithPath:filePath];
-    //    status=AudioFileOpenURL(URL, kAudioFileReadPermission, kAudioFileAAC_ADTSType, &audioFile);
+    //status=AudioFileOpenURL(URL, kAudioFileReadPermission, kAudioFileAAC_ADTSType, &audioFile);
     status=AudioFileOpenURL(URL, kAudioFileReadPermission, 0, &audioFile);
     if (status != noErr) {
         NSLog(@"*** Error *** PlayAudio - play:Path: could not open audio file. Path given was: %@", filePath);
@@ -160,8 +159,21 @@
     AudioFileClose(audioFile);
 }
 
++ (void) PrintFileStreamBasicDescription:(AudioStreamBasicDescription *) dataFormat
+{
+    NSLog(@"mFormatID=%d", (signed int)dataFormat->mFormatID);
+    NSLog(@"mFormatFlags=%d", (signed int)dataFormat->mFormatFlags);
+    NSLog(@"mSampleRate=%ld", (signed long int)dataFormat->mSampleRate);
+    NSLog(@"mBitsPerChannel=%d", (signed int)dataFormat->mBitsPerChannel);
+    NSLog(@"mBytesPerFrame=%d", (signed int)dataFormat->mBytesPerFrame);
+    NSLog(@"mBytesPerPacket=%d", (signed int)dataFormat->mBytesPerPacket);
+    NSLog(@"mChannelsPerFrame=%d", (signed int)dataFormat->mChannelsPerFrame);
+    NSLog(@"mFramesPerPacket=%d", (signed int)dataFormat->mFramesPerPacket);
+    NSLog(@"mReserved=%d", (signed int)dataFormat->mReserved);
+}
 
-static void writeWavHeader(AVCodecContext *pAudioCodecCtx,AVFormatContext *pFormatCtx,FILE *wavFile)
+
++ (void) writeWavHeaderWithCodecCtx: (AVCodecContext *)pAudioCodecCtx withFormatCtx: (AVFormatContext *) pFormatCtx toFile: (FILE *) wavFile;
 {
     char *data;
     int32_t long_temp;
@@ -356,7 +368,7 @@ static void writeWavHeader(AVCodecContext *pAudioCodecCtx,AVFormatContext *pForm
     AudioPacket.data = buffer;
     AudioPacket.size = buffer_size;
     
-    writeWavHeader(pAudioCodecCtx,pAudioFormatCtx,wavFile);
+    [AudioUtilities writeWavHeaderWithCodecCtx: pAudioCodecCtx withFormatCtx: pAudioFormatCtx toFile: wavFile];
     while(av_read_frame(pAudioFormatCtx,&AudioPacket)>=0) {
         if(AudioPacket.stream_index==audioStream) {
             int len=0;
@@ -425,8 +437,6 @@ static void writeWavHeader(AVCodecContext *pAudioCodecCtx,AVFormatContext *pForm
     }
     return self;
 }
-
-
 
 
 @end

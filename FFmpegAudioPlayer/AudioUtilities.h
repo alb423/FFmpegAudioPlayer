@@ -41,6 +41,8 @@ typedef struct AACADTSHeaderInfo {
 
 + (BOOL) parseAACADTSHeader:(uint8_t *) pInput ToHeader:(tAACADTSHeaderInfo *) pADTSHeader;
 + (int) getMPEG4AudioSampleRates: (uint8_t) vSamplingIndex;
-+(id)initForDecodeAudioFile: (NSString *) FilePathIn ToPCMFile:(NSString *) FilePathOut;
-+ (void) PrintFileStreamBasicDescription:(NSString *) FilePath;
++ (id)initForDecodeAudioFile: (NSString *) FilePathIn ToPCMFile:(NSString *) FilePathOut;
++ (void) PrintFileStreamBasicDescription:(AudioStreamBasicDescription *) dataFormat;
++ (void) PrintFileStreamBasicDescriptionFromFile:(NSString *) FilePath;
++ (void) writeWavHeaderWithCodecCtx: (AVCodecContext *)pAudioCodecCtx withFormatCtx: (AVFormatContext *) pFormatCtx toFile: (FILE *) wavFile;
 @end
