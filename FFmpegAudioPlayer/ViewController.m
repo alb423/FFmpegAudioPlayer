@@ -218,7 +218,7 @@
 
             aPlayer = [[AudioPlayer alloc]initAudio:nil withCodecCtx:(AVCodecContext *) pAudioCodecCtx];
 
-#if 1
+#if 0
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
                 [self readFFmpegAudioFrameAndDecode];
             });
@@ -241,7 +241,7 @@
             // Run Audio Player in main thread
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self stopAlertView:nil];
-                sleep(2);
+                sleep(5);
                 if([aPlayer getStatus]!=eAudioRunning)
                 {
                     [aPlayer Play];
@@ -436,6 +436,7 @@
         while(IsStop==FALSE)
         {
             vErr = av_read_frame(pFormatCtx, &vxPacket);
+            NSLog(@"av_read_frame");
             if(vErr>=0)
             {
                 if(vxPacket.stream_index==audioStream) {
