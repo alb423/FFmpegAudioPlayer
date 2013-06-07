@@ -5,9 +5,8 @@
 //  Created by Liao KuoHsun on 13/4/19.
 //
 //
-
+#import "AVFoundation/AVAudioSession.h"
 #import "AudioPlayer.h"
-
 #import "ViewController.h"
 #import "AudioUtilities.h"
 
@@ -284,6 +283,12 @@ void HandleOutputBuffer (
     int i=0, audio_index = 1;
     int vBufferSize=0;    
     int err;
+    
+    // support audio play when screen is locked
+    NSError *setCategoryErr = nil;
+    NSError *activationErr  = nil;
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:&setCategoryErr];
+    [[AVAudioSession sharedInstance] setActive:YES error:&activationErr];
     
     //pSampleQueue = [[NSMutableArray alloc] init];
     if(pInQueue)
