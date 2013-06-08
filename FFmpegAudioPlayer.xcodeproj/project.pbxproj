@@ -42,6 +42,7 @@
 		9A7F6D44174B3E6100BF347D /* 19_Austria.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */; };
 		9A87A154175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A87A150175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard */; };
 		9A87A155175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A87A152175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard */; };
+		9AB634261763182D00D6B177 /* hinet_radio_json.json in Resources */ = {isa = PBXBuildFile; fileRef = 9AB634251763182D00D6B177 /* hinet_radio_json.json */; };
 		9ADF204E1761D4D80018ACF3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADF204D1761D4D80018ACF3 /* AVFoundation.framework */; };
 		9AF84B1C172FB95700A56189 /* output.pcm in Resources */ = {isa = PBXBuildFile; fileRef = 9AF84B1B172FB95700A56189 /* output.pcm */; };
 		B20543361726DC6700BC6067 /* Visualizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A305E6717264BA7008A747D /* Visualizer.m */; };
@@ -102,6 +103,7 @@
 		9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 19_Austria.mp3; sourceTree = "<group>"; };
 		9A87A151175DA51B00C91DA6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
 		9A87A153175DA51B00C91DA6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
+		9AB634251763182D00D6B177 /* hinet_radio_json.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hinet_radio_json.json; sourceTree = "<group>"; };
 		9ADF204D1761D4D80018ACF3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		9AF84B1B172FB95700A56189 /* output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = output.pcm; sourceTree = "<group>"; };
 		B2070F40172D766C00745C49 /* AudioUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioUtilities.h; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 		9A6674871721133300FB478C /* FFmpegAudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				9AB634251763182D00D6B177 /* hinet_radio_json.json */,
 				9A87A150175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard */,
 				9A87A152175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard */,
 				9A7F6D43174B3E6100BF347D /* 19_Austria.mp3 */,
@@ -342,6 +345,7 @@
 				9A7F6D44174B3E6100BF347D /* 19_Austria.mp3 in Resources */,
 				9A87A154175DA51B00C91DA6 /* MainStoryboard_iPad.storyboard in Resources */,
 				9A87A155175DA51B00C91DA6 /* MainStoryboard_iPhone.storyboard in Resources */,
+				9AB634261763182D00D6B177 /* hinet_radio_json.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
