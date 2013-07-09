@@ -76,7 +76,7 @@ void HandleOutputBuffer (
     }
     
     // TODO: remove debug log
-    // NSLog(@"get 1 from audioPacketQueue: %d", [audioPacketQueue count]);
+    NSLog(@"get 1 from audioPacketQueue: %d", [audioPacketQueue count]);
     
     // If no data, we put silence audio (PCM format only)
     // If AudioQueue buffer is empty, AudioQueue will stop. 
@@ -178,7 +178,7 @@ void HandleOutputBuffer (
                                                        in_samples,
                                                        (const uint8_t **)pAVFrame1->extended_data,
                                                        in_samples);
-//                                NSLog(@"in_samples=%d, data_size=%d, outCount=%d", in_samples, data_size, outCount);
+                                NSLog(@"in_samples=%d, data_size=%d, outCount=%d", in_samples, data_size, outCount);
                                 if(outCount<0)
                                     NSLog(@"swr_convert fail");
                                 
@@ -514,10 +514,6 @@ void HandleOutputBuffer (
     return self;
 }    
     
-- (void) SetVolume:(float)vVolume
-{
-    AudioQueueSetParameter(mQueue, kAudioQueueParam_Volume, vVolume);
-}
 
 - (void) Play{
     OSStatus eErr=noErr;

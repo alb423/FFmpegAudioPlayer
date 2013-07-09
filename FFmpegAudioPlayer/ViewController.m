@@ -12,7 +12,6 @@
 #import "AudioUtilities.h"
 #define WAV_FILE_NAME @"1.wav"
 
-
 // If we read too fast, the size of aqQueue will increased quickly.
 // If we read too slow, .
 //#define LOCAL_FILE_DELAY_MS 80
@@ -66,29 +65,13 @@
     UIAlertView *pLoadRtspAlertView;
     UIActivityIndicatorView *pIndicator;
     NSTimer *vLoadRtspAlertViewtimer;
-    //NSTimer *vVisualizertimer;
-    
-    NSString *pUserSelectedURL;
-    UIPickerView *PlayTimePickerView;
+    NSTimer *vVisualizertimer;
 }
+
 @end
 
 
 @implementation ViewController
-{
-    NSInteger vTestCase;
-    
-    NSInteger vPlayTimerSecond, vPlayTimerMinute;
-    NSArray *PlayTimerSecondOptions;
-    NSArray *PlayTimerMinuteOptions;
-}
-
-@synthesize URLListData, URLNameToDisplay, VolumeBar;
-
-// When unitest is selected, we should disable error prompt msgbox of UI
-#define _UNITTEST_FOR_ALL_URL_ 0
-#define _UNITTEST_PLAY_INTERVAL_ 30
-
 
 //- (void)timerFired:(NSTimer *)timer
 //{
@@ -104,100 +87,8 @@
 //    [visualizer setNeedsDisplay];   
 //} 
 
-
-- (void)ProcessJsonDataForBroadCastURL:(NSData *)pJsonData
-{
-    //parse out the json data
-    NSError* error;
-    
-    NSMutableDictionary* jsonDictionary = [NSJSONSerialization JSONObjectWithData:pJsonData //1
-                                                                          options:NSJSONReadingAllowFragments
-                                                                            error:&error];
-    if(error!=nil)
-    {
-        //NSString* aStr;
-        //aStr = [[NSString alloc] initWithData:pJsonData encoding:NSUTF8StringEncoding];
-        //NSLog(@"str=%@",aStr);
-        
-        NSLog(@"json transfer error %@", error);
-        return;
-        
-    }
-    
-    // 1) retrieve the URL list into NSArray
-    // A simple test of URLListData
-    URLListData = [jsonDictionary objectForKey:@"url_list"];
-    if(URLListData==nil)
-    {
-        NSLog(@"URLListData load error!!");
-        return;
-    }
-    //NSLog(@"URLListData=%@",URLListData);
-    
-}
-
--(void)runNextTestCase:(NSTimer *)timer {
-    
-    if(timer!=nil)
-    {
-        [self StopPlayAudio:nil];
-        
-        if(vTestCase==[URLListData count])
-        {
-            [timer invalidate];
-            return;
-        }
-        else
-        {
-            vTestCase++;
-        
-            NSDictionary *URLDict = [URLListData objectAtIndex:vTestCase];
-            pUserSelectedURL = [URLDict valueForKey:@"url"];
-            [self PlayAudio:_PlayAudioButton];
-        }
-    }
-}
-
-
 - (void)viewDidLoad
-{    
-    // init 
-    NSString *pAudioPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:DEFAULT_BROADCAST_URL];
-    NSData *pJsonData = [[NSFileManager defaultManager] contentsAtPath:pAudioPath];
-    //NSData* pJsonData = [NSData dataWithContentsOfFile:pAudioPath];
-    
-    //NSLog(@"jsondata : %@", pJsonData);
-    [self ProcessJsonDataForBroadCastURL:pJsonData];
-    pAudioPath=nil;
-    pJsonData = nil;
-    
-    // init Volumen Bar
-    VolumeBar.maximumValue = 1.0;
-    VolumeBar.minimumValue = 0.0;
-    VolumeBar.value = 0.5;
-    VolumeBar.continuous = YES;
-    [aPlayer SetVolume:VolumeBar.value];
-    
-    
-    // init PlayTimer options
-    PlayTimerSecondOptions = [[NSArray alloc]initWithObjects:@"0",@"5",@"10",@"15",@"20",@"25",@"30",@"35",@"40",@"45",@"50",@"55",@"60",nil];
-    PlayTimerMinuteOptions = [[NSArray alloc]initWithObjects:@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9",@"10",@"11",@"12",nil];
-
-    
-#if _UNITTEST_FOR_ALL_URL_ == 1 // Unittest
-    vTestCase = 0;
-    NSDictionary *URLDict = [URLListData objectAtIndex:vTestCase];
-    pUserSelectedURL = [URLDict valueForKey:@"url"];
-    [self PlayAudio:_PlayAudioButton];
-    
-    [NSTimer scheduledTimerWithTimeInterval:_UNITTEST_PLAY_INTERVAL_
-                                       target:self
-                                     selector:@selector(runNextTestCase:)
-                                     userInfo:nil
-                                      repeats:YES];
-    
-#endif
-    
+{
     [super viewDidLoad];
     return;
 }
@@ -214,11 +105,9 @@
     if(timer!=nil)
     {
         [timer invalidate];
-#if _UNITTEST_FOR_ALL_URL_ != 1
         UIAlertView *pErrAlertView = [[UIAlertView alloc] initWithTitle:@"\n\nRTSP error"
                                                                 message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [pErrAlertView show];
-#endif
         [self.PlayAudioButton setTitle:@"Play" forState:UIControlStateNormal];
     }
     
@@ -273,18 +162,12 @@
     
     [self destroyFFmpegAudioStream];
     
-    //[vVisualizertimer invalidate];
-    //vVisualizertimer = nil;
-    //[visualizer clear];
-    //visualizer = nil;
+    [vVisualizertimer invalidate];
+    vVisualizertimer = nil;
+    [visualizer clear];
+    visualizer = nil;
     //[visualizer deinit];
 }
-
-
-
-
-
-
 
 - (IBAction)PlayAudio:(id)sender {
     
@@ -302,8 +185,8 @@
     vxRect.size.height = 300;
     vxRect.size.width = 300;
     
-    //visualizer = [[Visualizer alloc] initWithFrame:vxRect];
-    //[self.view addSubview:visualizer];
+    visualizer = [[Visualizer alloc] initWithFrame:vxRect];
+    [self.view addSubview:visualizer];
     
     if([vBn.currentTitle isEqualToString:@"Stop"])
     {
@@ -314,8 +197,8 @@
     }
     else
     {
-        [vBn setTitle:@"Stop" forState:UIControlStateNormal];
-        [self startAlertView];
+        [vBn setTitle:@"Stop" forState:UIControlStateNormal];        
+        [self startAlertView];        
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
             if([self initFFmpegAudioStream]==FALSE)
@@ -324,11 +207,10 @@
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [vBn setTitle:@"Play" forState:UIControlStateNormal];
                 [self stopAlertView:nil];
-#if _UNITTEST_FOR_ALL_URL_ != 1
+                
                 UIAlertView *pErrAlertView = [[UIAlertView alloc] initWithTitle:@"\n\nRTSP error"
                                                                 message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
                 [pErrAlertView show];
-#endif
                 });
                 return;
             }
@@ -379,8 +261,6 @@
     }
 }
 
-
-#pragma mark - ffmpeg usage
 -(BOOL) initFFmpegAudioStream{
     
     NSString *pAudioInPath;
@@ -394,31 +274,23 @@
         [AudioUtilities parseAACADTSHeader:pInput ToHeader:(tAACADTSHeaderInfo *) &vxADTSHeader];
     }
     
-    // The pAudioInPath should be set when user select a url
-    if(pUserSelectedURL==nil)
+    if( strncmp([AUDIO_TEST_PATH UTF8String], "rtsp", 4)==0)
     {
-        // use default url for testing
         pAudioInPath = AUDIO_TEST_PATH;
-    }
-    else
-    {
-        pAudioInPath = pUserSelectedURL;
-    }
-        
-    if( strncmp([pAudioInPath UTF8String], "rtsp", 4)==0)
-    {
         IsLocalFile = FALSE;
     }
-    else if( strncmp([pAudioInPath UTF8String], "mms:", 4)==0)
+    else if( strncmp([AUDIO_TEST_PATH UTF8String], "mms:", 4)==0)
     {
+        pAudioInPath = AUDIO_TEST_PATH;
         //replay "mms:" to "mmsh:" or "mmst:"
         pAudioInPath = [pAudioInPath stringByReplacingOccurrencesOfString:@"mms:" withString:@"mmsh:"];
-//pAudioInPath = [pAudioInPath stringByReplacingOccurrencesOfString:@"mms:" withString:@"mmst:"];
-        //NSLog(@"pAudioPath=%@", pAudioInPath);
+        NSLog(@"pAudioPath=%@", pAudioInPath);
         IsLocalFile = FALSE;
     }
-    else if( strncmp([pAudioInPath UTF8String], "mmsh", 4)==0)
+    else if( strncmp([AUDIO_TEST_PATH UTF8String], "mmsh", 4)==0)
     {
+        pAudioInPath = AUDIO_TEST_PATH;
+        // TODO: replay "mms:" to "mmsh:" or "mmst:"
         IsLocalFile = FALSE;
     }
     else
@@ -447,13 +319,13 @@
     // Open video file
     if(avformat_open_input(&pFormatCtx, [pAudioInPath cStringUsingEncoding:NSASCIIStringEncoding], NULL, &opts) != 0) {
 
-        if( strncmp([pAudioInPath UTF8String], "mmst", 4)==0)
+        if( strncmp([AUDIO_TEST_PATH UTF8String], "mmsh", 4)==0)
         {
-            av_log(NULL, AV_LOG_ERROR, "Couldn't open mmst connection\n");
-            pAudioInPath= [pAudioInPath stringByReplacingOccurrencesOfString:@"mmst:" withString:@"mmsh:"];
+            av_log(NULL, AV_LOG_ERROR, "Couldn't open mmsh connection\n");
+            [pAudioInPath stringByReplacingOccurrencesOfString:@"mmsh:" withString:@"mmst:"];
             if(avformat_open_input(&pFormatCtx, [pAudioInPath cStringUsingEncoding:NSASCIIStringEncoding], NULL, &opts) != 0)
             {
-                av_log(NULL, AV_LOG_ERROR, "Couldn't open mmsh connection to %s\n", [pAudioInPath UTF8String]);
+                av_log(NULL, AV_LOG_ERROR, "Couldn't open mmst connection\n");
                 return FALSE;
             }
         }
@@ -629,186 +501,5 @@
 //    }
     NSLog(@"Leave ReadFrame");
 }
-
-
-#pragma mark - URL_list TableView
-
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    NSLog(@"[URLListData count]=%d",[URLListData count]);
-    return [URLListData count];
-}
-
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *tableIdentifier = @"Simple table";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:tableIdentifier];
-    if(cell == nil){
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:tableIdentifier];
-    }
-    
-    NSDictionary *URLDict = [URLListData objectAtIndex:indexPath.row];
-    //NSLog(@"%@",[URLDict valueForKey:@"title"]);
-    cell.textLabel.text = [URLDict valueForKey:@"title"];
-    URLDict = nil;
-    return cell;
-}
-
--(void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSDictionary *URLDict = [URLListData objectAtIndex:indexPath.row];
-    cell.textLabel.text = [URLDict valueForKey:@"title"];
-    URLDict = nil;
-}
-
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Set the URL_TO_PLAY to the url user select
-    NSDictionary *URLDict = [URLListData objectAtIndex:indexPath.row];
-    pUserSelectedURL = [URLDict valueForKey:@"url"];
-    URLNameToDisplay.text = [URLDict valueForKey:@"title"];
-    URLNameToDisplay.textAlignment = NSTextAlignmentCenter;
-}
-
-#pragma mark - volume_bar Slider
-- (IBAction)VolumeBarPressed:(id)sender {
-    [aPlayer SetVolume:VolumeBar.value];
-}
-
-
-#pragma mark - Play Timer PickView
-// reference http://blog.csdn.net/zzfsuiye/article/details/6644566
-// reference http://blog.sina.com.cn/s/blog_7119b1a40100vxwv.html
-// 返回pickerview的组件数
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)thePickerView {
-    return 2;
-}
-
-// 返回每个组件上的行数
-- (NSInteger)pickerView:(UIPickerView *)thePickerView numberOfRowsInComponent:(NSInteger)component {
-    if(component==0)
-    {
-        return [PlayTimerMinuteOptions count];
-    }
-    else
-    {
-        return [PlayTimerSecondOptions count];
-    }
-
-}
-
-// 设置每行显示的内容
-- (NSString *)pickerView:(UIPickerView *)thePickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    
-    if(component==0)
-    {
-        return [PlayTimerMinuteOptions objectAtIndex:row];
-    }
-    else
-    {
-        return [PlayTimerSecondOptions objectAtIndex:row];
-    }
-}
-
-//使pickerview从底部出现
--(void) showPickerView {
-    [UIView beginAnimations: @"Animation" context:nil];//设置动画
-    [UIView setAnimationDuration:0.3];
-    PlayTimePickerView.frame = CGRectMake(0,240, 320, 460);
-    [UIView commitAnimations];
-}
-
-//使pickerview隐藏到屏幕底部
--(void) hidePickerView {
-    [UIView beginAnimations:@"Animation"context:nil];
-    [UIView setAnimationDuration:0.3];
-    PlayTimePickerView.frame =CGRectMake(0,460, 320, 460);
-    [UIView commitAnimations];
-}
-
-#if 0
-//自定义pickerview使内容显示在每行的中间，默认显示在每行的左边
-- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0.0f,0.0f, [pickerView rowSizeForComponent:component].width, [pickerView rowSizeForComponent:component].height)];
-    if (row ==0) {
-        label.text =@"男";
-    }else {
-        label.text =@"女";
-    }
-    
-    //[label setTextAlignment:UITextAlignmentCenter];
-    [label setTextAlignment:NSTextAlignmentCenter];
-    return label;
-}
-#endif
-
-//当你选中pickerview的某行时会调用该函数。
-- (void)pickerView:(UIPickerView *)thePickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSLog(@"You select component:%d row %d",component, row);
-    if(component==0)
-    {
-        vPlayTimerMinute = [[PlayTimerMinuteOptions objectAtIndex:row] intValue];
-    }
-    else
-    {
-        vPlayTimerSecond = [[PlayTimerSecondOptions objectAtIndex:row] intValue];
-    }
-}
-
--(void)PlayTimerFired:(NSTimer *)timer {
-    NSLog(@"PlayTimerFired");
-    [self StopPlayAudio:nil];
-    if(timer!=nil)
-    {
-        [timer invalidate];
-    }
-}
-
-
-- (IBAction)PlayTimerButtonPressed:(id)sender {
-    static int bPickerViewVisible = 0;
-    
-    if (PlayTimePickerView==nil) {
-        PlayTimePickerView = [[UIPickerView alloc] initWithFrame:CGRectMake(0,460, 320, 460)];
-        PlayTimePickerView.delegate = self;
-        PlayTimePickerView.dataSource = self;
-        PlayTimePickerView.showsSelectionIndicator = YES; //选中某行时会和其他行显示不同
-        [self.view addSubview:PlayTimePickerView];
-        //PlayTimePickerView= nil;
-    }
-    
-    if(bPickerViewVisible==0)
-    {
-        bPickerViewVisible = 1;
-        [self showPickerView];
-    }
-    else
-    {
-        // Choose Time and then set timer to stop play
-        int vSeconds=0;
-        vSeconds = vPlayTimerMinute*60 + vPlayTimerSecond;
-        NSLog(@"Set Play Time to %d Seconds", vSeconds);
-        [NSTimer scheduledTimerWithTimeInterval:vSeconds                                         target:self
-                                       selector:@selector(PlayTimerFired:)
-                                       userInfo:nil
-                                        repeats:YES];
-        bPickerViewVisible = 0;
-        [self hidePickerView];
-
-    }
-}
-
-
-#pragma mark - ad_banner_view
-#if 0
-- (BOOL)bannerViewActionShouldBegin:(ADBannerView *)banner willLeaveApplication:(BOOL)willLeave
-{
-    NSLog(@"Banner view is beginning an ad action");
-    BOOL shouldExecuteAction = [self allowActionToRun]; // your application implements this method
-    if (!willLeave && shouldExecuteAction)
-    {
-        // insert code here to suspend any services that might conflict with the advertisement
-    }
-    return shouldExecuteAction;
-}
-#endif
-
 
 @end

@@ -11,13 +11,9 @@
 #include "libswscale/swscale.h"
 #import "AudioPacketQueue.h"
 #import "AudioPlayer.h"
-//#import "Visualizer.h"
+#import "Visualizer.h"
 
-#define DEFAULT_BROADCAST_URL @"hinet_radio_json.json"
-
-@interface ViewController : UIViewController <UIPickerViewDelegate, UIPickerViewDataSource>
-//@interface ViewController : UIViewController <UIPickerViewDelegate>
-{
+@interface ViewController : UIViewController {
 	AVFormatContext *pFormatCtx;    
     AVCodecContext *pAudioCodecCtx;
     AVPacket packet;
@@ -29,18 +25,11 @@
     BOOL IsStop;
     BOOL IsLocalFile;
     
-    //Visualizer *visualizer;
+    Visualizer *visualizer;
 
 }
 
 @property (weak, nonatomic) IBOutlet UIButton *PlayAudioButton;
-@property (weak, nonatomic) IBOutlet UITableView *URLListView;
-@property (strong, nonatomic) NSArray *URLListData;
-@property (weak, nonatomic) IBOutlet UILabel *URLNameToDisplay;
-@property (weak, nonatomic) IBOutlet UISlider *VolumeBar;
-
-- (IBAction)PlayTimerButtonPressed:(id)sender;
-- (IBAction)VolumeBarPressed:(id)sender;
 - (IBAction)PlayAudio:(id)sender;
-- (void)ProcessJsonDataForBroadCastURL:(NSData *)pJsonData;
+
 @end

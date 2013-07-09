@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12C60" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
     </dependencies>
@@ -13,9 +13,6 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8hS-i2-uGb">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="43" id="sSg-Hv-CcW"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="PLAY">
                                     <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -28,76 +25,20 @@
                                     <action selector="PlayAudio:" destination="2" eventType="touchUpInside" id="ohk-sm-rGg"/>
                                 </connections>
                             </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" pagingEnabled="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="CVH-Ul-EUE">
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="302" id="avn-0W-mJL"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="dataSource" destination="2" id="nZ9-8f-xj0"/>
-                                    <outlet property="delegate" destination="2" id="wp6-JI-oFN"/>
-                                </connections>
-                            </tableView>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="198" translatesAutoresizingMaskIntoConstraints="NO" id="73a-BC-1o4">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="73" id="LIv-Da-Feo"/>
-                                    <constraint firstAttribute="width" constant="198" id="NlY-ui-Rlb"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="lA6-5W-rt0">
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="257" id="0O4-R7-jIC"/>
-                                </constraints>
-                                <connections>
-                                    <action selector="VolumeBarPressed:" destination="2" eventType="valueChanged" id="xt3-8Z-ISZ"/>
-                                </connections>
-                            </slider>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uRE-kn-pIy">
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="73" id="9ex-lV-SfA"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="Timer">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="PlayTimerButtonPressed:" destination="2" eventType="touchUpInside" id="3oF-kd-Aj4"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="lA6-5W-rt0" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="6mL-bo-38v"/>
-                            <constraint firstItem="CVH-Ul-EUE" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" type="default" id="A3m-m5-PSy"/>
-                            <constraint firstItem="73a-BC-1o4" firstAttribute="baseline" secondItem="8hS-i2-uGb" secondAttribute="baseline" type="default" id="HiV-fj-thk"/>
-                            <constraint firstItem="CVH-Ul-EUE" firstAttribute="top" secondItem="lA6-5W-rt0" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="IG6-3w-NT6"/>
-                            <constraint firstItem="8hS-i2-uGb" firstAttribute="top" secondItem="3" secondAttribute="top" constant="29" id="MOD-sp-c1p"/>
-                            <constraint firstAttribute="trailing" secondItem="uRE-kn-pIy" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="Q1U-Dp-Xf0"/>
-                            <constraint firstItem="uRE-kn-pIy" firstAttribute="top" secondItem="73a-BC-1o4" secondAttribute="top" type="default" id="Wjp-QI-Kxn"/>
-                            <constraint firstItem="CVH-Ul-EUE" firstAttribute="leading" secondItem="3" secondAttribute="leading" type="default" id="hwN-ok-UlP"/>
-                            <constraint firstItem="lA6-5W-rt0" firstAttribute="top" secondItem="8hS-i2-uGb" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="n5r-kS-SRo"/>
-                            <constraint firstItem="73a-BC-1o4" firstAttribute="top" secondItem="3" secondAttribute="top" constant="8" id="qJv-Wp-Vuf"/>
-                            <constraint firstAttribute="trailing" secondItem="73a-BC-1o4" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="tah-pr-k26"/>
-                            <constraint firstItem="8hS-i2-uGb" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="wFZ-T7-l6z"/>
+                            <constraint firstAttribute="bottom" secondItem="8hS-i2-uGb" secondAttribute="bottom" constant="48" id="PhN-pr-4BT"/>
+                            <constraint firstItem="8hS-i2-uGb" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="43" id="bIb-Vb-S3k"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="PlayAudioButton" destination="8hS-i2-uGb" id="zap-al-zjx"/>
-                        <outlet property="URLListView" destination="CVH-Ul-EUE" id="Ra9-VM-YCH"/>
-                        <outlet property="URLNameToDisplay" destination="73a-BC-1o4" id="NHP-pL-001"/>
-                        <outlet property="VolumeBar" destination="lA6-5W-rt0" id="1FI-S4-rhq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-629" y="37"/>
+            <point key="canvasLocation" x="-277" y="38"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
