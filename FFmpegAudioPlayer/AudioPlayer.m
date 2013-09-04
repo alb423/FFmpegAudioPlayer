@@ -76,7 +76,7 @@ void HandleOutputBuffer (
     }
     
     // TODO: remove debug log
-    NSLog(@"get 1 from audioPacketQueue: %d", [audioPacketQueue count]);
+    //NSLog(@"get 1 from audioPacketQueue: %d", [audioPacketQueue count]);
     
     // If no data, we put silence audio (PCM format only)
     // If AudioQueue buffer is empty, AudioQueue will stop. 
@@ -178,7 +178,7 @@ void HandleOutputBuffer (
                                                        in_samples,
                                                        (const uint8_t **)pAVFrame1->extended_data,
                                                        in_samples);
-                                NSLog(@"in_samples=%d, data_size=%d, outCount=%d", in_samples, data_size, outCount);
+                                //NSLog(@"in_samples=%d, data_size=%d, outCount=%d", in_samples, data_size, outCount);
                                 if(outCount<0)
                                     NSLog(@"swr_convert fail");
                                 
@@ -190,6 +190,22 @@ void HandleOutputBuffer (
                             
                                 buffer->mAudioDataByteSize += data_size;
                                 
+                                if(vRecordingStatus==eRecordRecording)
+                                {
+                                    if(pAudioOutputFile!=NULL)
+                                    {
+                                        if(vRecordingAudioFormat==kAudioFormatMPEG4AAC)
+                                        {
+                                            ;
+                                        }
+                                        else
+                                        {
+                                            // WAVE file
+                                            fwrite(pOut,  1, data_size, pAudioOutputFile);
+                                            vAudioOutputFileSize += data_size;
+                                        }
+                                    }
+                                }
                                 //20130424
                                 // waveform
                                 //                                1. Compute and cache a reduction, by extracting maxima/minima from blocks of (say) 256 samples.
@@ -601,6 +617,55 @@ withSeconds:(Float64)    seconds
     }
     
     return outBufferSize;
+}
+
+#pragma mark - Audio Recording
+- (void) RecordingStart:(NSString *)pRecordingFile
+{
+    NSLog(@"RecordingStart");
+    vRecordingStatus = eRecordInit;
+    pAudioOutputFile=fopen([pRecordingFile UTF8String],"wb");
+    if (pAudioOutputFile==NULL)
+    {
+        NSLog(@"Open file %@ error",pRecordingFile);
+        return;
+    }
+    
+
+    if(vRecordingAudioFormat==kAudioFormatMPEG4AAC)
+    {
+        ;
+    }
+    else
+    {
+        // Save as WAV file
+        // Create the wave header
+        [AudioUtilities writeWavHeaderWithCodecCtx: aCodecCtx withFormatCtx: nil toFile: pAudioOutputFile];
+    }
+    vRecordingStatus = eRecordRecording;
+}
+
+- (void) RecordingStop
+{
+    NSLog(@"RecordingStop");    
+    vRecordingStatus = eRecordStop;
+    
+    if(vRecordingAudioFormat==kAudioFormatMPEG4AAC)
+    {
+        ;
+    }
+    else
+    {
+        // Default is WAV file (kAudioFormatLinearPCM)
+        // Update the wave header
+        fseek(pAudioOutputFile,40,SEEK_SET);
+        fwrite(&vAudioOutputFileSize,1,sizeof(int32_t),pAudioOutputFile);
+        vAudioOutputFileSize+=36;
+        fseek(pAudioOutputFile,4,SEEK_SET);
+        fwrite(&vAudioOutputFileSize,1,sizeof(int32_t),pAudioOutputFile);
+        fclose(pAudioOutputFile);
+    }
+   
 }
 
 #pragma mark - Test tool of Audio

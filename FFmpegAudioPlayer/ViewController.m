@@ -10,6 +10,7 @@
 #import "ViewController.h"
 #import "AudioPlayer.h"
 #import "AudioUtilities.h"
+
 #define WAV_FILE_NAME @"1.wav"
 
 // If we read too fast, the size of aqQueue will increased quickly.
@@ -67,11 +68,14 @@
     NSTimer *vLoadRtspAlertViewtimer;
     NSTimer *vVisualizertimer;
 }
-
 @end
 
 
 @implementation ViewController
+
+// 20130903 albert.liao modified start
+@synthesize bRecordStart;
+// 20130903 albert.liao modified end
 
 //- (void)timerFired:(NSTimer *)timer
 //{
@@ -174,7 +178,9 @@
     UIButton *vBn = (UIButton *)sender;
 
 #if 0
-    [AudioUtilities initForDecodeAudioFile:AUDIO_TEST_PATH ToPCMFile:@"/Users/liaokuohsun/1.wav"];
+    NSString *pAudioInPath;
+    pAudioInPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:AUDIO_TEST_PATH];
+    [AudioUtilities initForDecodeAudioFile:pAudioInPath ToPCMFile:@"/Users/liaokuohsun/1.wav"];
     NSLog(@"Save file to /Users/liaokuohsun/1.wav");
     return;
 #endif
@@ -436,7 +442,7 @@
         while(IsStop==FALSE)
         {
             vErr = av_read_frame(pFormatCtx, &vxPacket);
-            NSLog(@"av_read_frame");
+            //NSLog(@"av_read_frame");
             if(vErr>=0)
             {
                 if(vxPacket.stream_index==audioStream) {
@@ -444,8 +450,9 @@
                     if(ret <= 0)
                         NSLog(@"Put Audio Packet Error!!");
                     
-                    // TODO: use pts/dts to decide the delay time 
+                    // TODO: use pts/dts to decide the delay time
                     usleep(1000*LOCAL_FILE_DELAY_MS);
+                    
                 }
                 else
                 {
@@ -491,7 +498,7 @@
             }
         }
     }
-    
+
 //    if (pAudioCodecCtx) {
 //        avcodec_close(pAudioCodecCtx);
 //        pAudioCodecCtx = NULL;
@@ -501,5 +508,26 @@
 //    }
     NSLog(@"Leave ReadFrame");
 }
+
+#pragma mark - Recording Control 
+- (IBAction)VideoRecordPressed:(id)sender {
+    
+    if(bRecordStart==true)
+    {
+        bRecordStart = false;
+        [aPlayer RecordingStop];
+    }
+    else
+    {
+        // set recording format
+        //vRecordingAudioFormat = kAudioFormatLinearPCM; (Test ok)
+        //vRecordingAudioFormat = kAudioFormatMPEG4AAC; (need Test)
+        bRecordStart = true;        
+        [aPlayer RecordingStart:@"/Users/liaokuohsun/2.wav"];
+    }
+    
+    //[self startRecordingAlertView];
+}
+
 
 @end

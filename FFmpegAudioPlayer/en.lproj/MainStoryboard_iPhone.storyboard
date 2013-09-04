@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12C60" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
     </dependencies>
@@ -25,11 +25,29 @@
                                     <action selector="PlayAudio:" destination="2" eventType="touchUpInside" id="ohk-sm-rGg"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whU-m4-9kR">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="73" id="0wp-tv-tmF"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="Record">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="VideoRecordPressed:" destination="2" eventType="touchUpInside" id="JQm-Bv-cSO"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="8hS-i2-uGb" secondAttribute="bottom" constant="48" id="PhN-pr-4BT"/>
                             <constraint firstItem="8hS-i2-uGb" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="43" id="bIb-Vb-S3k"/>
+                            <constraint firstAttribute="trailing" secondItem="whU-m4-9kR" secondAttribute="trailing" constant="84" id="gEA-2x-Nbo"/>
+                            <constraint firstItem="whU-m4-9kR" firstAttribute="baseline" secondItem="8hS-i2-uGb" secondAttribute="baseline" type="default" id="x8C-Tw-mvB"/>
                         </constraints>
                     </view>
                     <connections>
@@ -38,7 +56,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-277" y="38"/>
+            <point key="canvasLocation" x="-383" y="25"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

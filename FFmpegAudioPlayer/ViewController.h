@@ -32,4 +32,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *PlayAudioButton;
 - (IBAction)PlayAudio:(id)sender;
 
+// 20130903 albert.liao modified start
+@property BOOL bRecordStart;
+- (IBAction)VideoRecordPressed:(id)sender;
+// 20130903 albert.liao modified end
+
 @end

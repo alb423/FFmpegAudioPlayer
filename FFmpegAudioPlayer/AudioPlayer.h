@@ -12,7 +12,6 @@
 #include "libavformat/avformat.h"
 #include "libavutil/opt.h"
 #include "libswresample/swresample.h"
-
 // An audio queue can use any number of buffers—your application specifies how many. A typical number is three.
 #define NUM_BUFFERS 3
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000
@@ -23,6 +22,12 @@
     enum eAudioStatus {
         eAudioRunning = 1,
         eAudioStop = 2
+    };
+    
+    enum eAudioRecordingStatus {
+        eRecordInit = 1,
+        eRecordRecording = 2,
+        eRecordStop = 3
     };
     
                              // 1
@@ -37,6 +42,7 @@
     bool                          mIsRunning;                     // 10
     
     bool isFormatVBR;
+
     AVCodecContext   *aCodecCtx;
     AudioPacketQueue *audioPacketQueue;
     AVFrame          *pAudioFrame;
@@ -44,6 +50,12 @@
     
     long LastStartTime;
     
+    // For audio save
+    bool   enableRecording;
+    UInt32 vRecordingAudioFormat;
+    UInt32 vRecordingStatus;
+    UInt32 vAudioOutputFileSize;
+    FILE * pAudioOutputFile;
     //NSMutableArray *pSampleQueue;
 }
 
@@ -57,6 +69,8 @@
 -(int) getAVPacket :(AVPacket *) pkt;
 -(void)freeAVPacket:(AVPacket *) pkt;
 
+- (void) RecordingStart:(NSString *)pRecordingFile;
+- (void) RecordingStop;
 @property BOOL bIsADTSAAS;
 //@property NSMutableArray *pSampleQueue;
 
