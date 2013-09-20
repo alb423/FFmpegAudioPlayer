@@ -9,6 +9,8 @@
 #import "AudioPlayer.h"
 #import "ViewController.h"
 #import "AudioUtilities.h"
+#include "libavcodec/avcodec.h"
+#include "libavformat/avformat.h"
 
 @implementation AudioPlayer
 
@@ -192,13 +194,51 @@ void HandleOutputBuffer (
                                 
                                 if(vRecordingStatus==eRecordRecording)
                                 {
-                                    if(pAudioOutputFile!=NULL)
+                                    if(vRecordingAudioFormat!=kAudioFormatLinearPCM)
                                     {
-                                        if(vRecordingAudioFormat==kAudioFormatMPEG4AAC)
+                                        //if(aCodecCtx->codec_id==AV_CODEC_ID_AAC)
+                                        if(aCodecCtx->codec_id!=AV_CODEC_ID_AAC)
                                         {
-                                            ;
+                                            uint8_t *pHeader = &(AudioPacket.data[0]);
+                                            // Parse audio data to see if there is ADTS header
+                                            tAACADTSHeaderInfo vxADTSHeader={0};
+                                            bIsADTSAAS = [AudioUtilities parseAACADTSHeader:pHeader ToHeader:(tAACADTSHeaderInfo *) &vxADTSHeader];
+                                            
+                                            AVPacket Pkt={0};
+
+                                            if(bIsADTSAAS)
+                                            {
+                                                Pkt.size = pktSize-7;
+                                                Pkt.data = pktData+7;
+                                            }
+                                            else
+                                            {
+                                                // This will produce error message
+                                                // "malformated aac bitstream, use -absf aac_adtstoasc"
+                                                Pkt.size = AudioPacket.size;
+                                                Pkt.data = AudioPacket.data;
+                                            }
+                                            //Pkt.stream_index = 1;//AudioPacket.stream_index;
+                                            //Pkt.flags |= AV_PKT_FLAG_KEY;
+                                            
+                                            //av_write_frame(pRecordingAudioFC, &Pkt );
+                                            av_interleaved_write_frame( pRecordingAudioFC, &Pkt );
                                         }
                                         else
+                                        {
+                                            // This part can record ok
+                                            int vRet=0;
+                                            AVPacket Pkt={0};
+                                            
+                                            vRet = avcodec_encode_audio2(pOutputCodecContext, &Pkt, pAVFrame1, &gotFrame);
+                                            av_interleaved_write_frame( pRecordingAudioFC, &Pkt );
+                                            
+                                            NSLog(@"TODO vRet=%d",vRet);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if(pAudioOutputFile!=NULL)
                                         {
                                             // WAVE file
                                             fwrite(pOut,  1, data_size, pAudioOutputFile);
@@ -364,6 +404,7 @@ void HandleOutputBuffer (
             audioFormat.mFramesPerPacket = 1;
             audioFormat.mReserved = 0;
 
+            NSLog(@"sample_rate=%d, channels=%d, channel_layout=%lld",pAudioCodecCtx->sample_rate, pAudioCodecCtx->channels, pAudioCodecCtx->channel_layout);
             // The default audio data defined by APPLE is 16bits.
             // If we got 32 or 8, we should covert it to 16bits
             if(pAudioCodecCtx->sample_fmt==AV_SAMPLE_FMT_FLTP) 
@@ -391,9 +432,7 @@ void HandleOutputBuffer (
                                              pAudioCodecCtx->sample_rate,
                                              0,
                                              0);
-                }
-                NSLog(@"sample_rate=%d, channels=%d, channel_layout=%lld",pAudioCodecCtx->sample_rate, pAudioCodecCtx->channels, pAudioCodecCtx->channel_layout);
-                
+                }                
                 if(swr_init(pSwrCtx)<0)
                 {
                     NSLog(@"swr_init() for AV_SAMPLE_FMT_FLTP fail");
@@ -620,24 +659,137 @@ withSeconds:(Float64)    seconds
 }
 
 #pragma mark - Audio Recording
+- (void) RecordingSetAudioFormat:(int)vAudioFormat
+{
+    vRecordingAudioFormat = vAudioFormat;
+}
+
 - (void) RecordingStart:(NSString *)pRecordingFile
 {
+    int vRet=0;
+    
     NSLog(@"RecordingStart");
     vRecordingStatus = eRecordInit;
-    pAudioOutputFile=fopen([pRecordingFile UTF8String],"wb");
-    if (pAudioOutputFile==NULL)
-    {
-        NSLog(@"Open file %@ error",pRecordingFile);
-        return;
-    }
-    
 
     if(vRecordingAudioFormat==kAudioFormatMPEG4AAC)
     {
-        ;
+        AVOutputFormat *pOutputFormat=NULL;
+        AVStream *pOutputStream=NULL;
+        //AVCodecContext *pOutputCodecContext=NULL;
+        AVCodec *pCodec=NULL;
+        const char *pFilePath = [pRecordingFile UTF8String];
+        
+        // Create container
+        pOutputFormat = av_guess_format( 0, pFilePath, 0 );
+        
+        pRecordingAudioFC = avformat_alloc_context();
+        pRecordingAudioFC->oformat = pOutputFormat;
+        strcpy( pRecordingAudioFC->filename, pFilePath );
+        
+        // Assign codec as the same codec of input data
+        pCodec = avcodec_find_encoder(AV_CODEC_ID_AAC); // AV_CODEC_ID_AAC
+        
+        
+#if 1
+        // Add audio stream
+        pOutputStream = avformat_new_stream( pRecordingAudioFC, pCodec );
+        vRecordingAudioStreamIdx = pOutputStream->index;
+        NSLog(@"Audio Stream:%d", (unsigned int)vRecordingAudioStreamIdx);
+        pOutputCodecContext = pOutputStream->codec;
+        avcodec_get_context_defaults3( pOutputCodecContext, pCodec );
+#else
+        // Add audio stream
+        pOutputStream = avformat_new_stream( pRecordingAudioFC, 0 );
+        vRecordingAudioStreamIdx = pOutputStream->index;
+        NSLog(@"Audio Stream:%d", (unsigned int)vRecordingAudioStreamIdx);
+        pOutputCodecContext = pOutputStream->codec;
+        avcodec_get_context_defaults3( pOutputCodecContext, NULL );
+#endif
+
+        //pOutputCodecContext = pRecordingAudioFC->streams[vRecordingAudioStreamIdx]->codec;
+#if 0
+        // reference http://ffmpeg.org/doxygen/0.6/output-example_8c-source.html
+        pOutputCodecContext->codec_type = AVMEDIA_TYPE_AUDIO;
+        pOutputCodecContext->codec_id = AV_CODEC_ID_AAC;
+        
+        pOutputCodecContext->bit_rate = aCodecCtx->bit_rate;
+        pOutputCodecContext->channels = aCodecCtx->channels;
+        pOutputCodecContext->sample_rate = aCodecCtx->sample_rate;
+
+#else
+        // check why codec_id didn't set correct automatically
+        pOutputCodecContext->codec_type = AVMEDIA_TYPE_AUDIO;
+        pOutputCodecContext->codec_id = AV_CODEC_ID_AAC;
+        pOutputCodecContext->bit_rate = aCodecCtx->bit_rate;
+        NSLog(@"bit_rate=%d", pOutputCodecContext->bit_rate);
+        //pOutputCodecContext->frame_size = aCodecCtx->frame_size;
+        
+        // Copy the codec attributes
+        pOutputCodecContext->channels = aCodecCtx->channels;
+        pOutputCodecContext->channel_layout = aCodecCtx->channel_layout;
+        pOutputCodecContext->sample_rate = aCodecCtx->sample_rate;
+        
+        // AV_SAMPLE_FMT_U8P, AV_SAMPLE_FMT_S16P
+        pOutputCodecContext->sample_fmt = aCodecCtx->sample_fmt;
+        pOutputCodecContext->sample_aspect_ratio = aCodecCtx->sample_aspect_ratio;
+        
+#endif
+
+        pOutputCodecContext->time_base.num = aCodecCtx->time_base.num;
+        pOutputCodecContext->time_base.den = aCodecCtx->time_base.den;
+        pOutputCodecContext->ticks_per_frame = aCodecCtx->ticks_per_frame;
+
+        // Reference http://libav-users.943685.n4.nabble.com/Libav-user-AAC-encoding-error-td4657210.html
+        // Native AAC encoder is experimental and so you need to set additional flag to use.flag to use.
+        AVDictionary *opts = NULL;
+        av_dict_set(&opts, "strict", "experimental", 0);
+        
+        if (avcodec_open2(pOutputCodecContext, pCodec, &opts) < 0) {
+            fprintf(stderr, "\ncould not open codec\n");
+        }
+        
+        av_dict_free(&opts);
+        
+        av_dump_format(pRecordingAudioFC, 0, pFilePath, 1);
+        NSLog(@"==!!");
+        
+        if(aCodecCtx->extradata_size!=0)
+        {
+            pOutputCodecContext->extradata = malloc(sizeof(uint8_t)*aCodecCtx->extradata_size);
+            memcpy(pOutputCodecContext->extradata, aCodecCtx->extradata, aCodecCtx->extradata_size);
+            pOutputCodecContext->extradata_size = aCodecCtx->extradata_size;
+        }
+        
+        if(pRecordingAudioFC->oformat->flags & AVFMT_GLOBALHEADER)
+        {
+            pOutputCodecContext->flags |= CODEC_FLAG_GLOBAL_HEADER;
+        }
+        
+        if ( !( pRecordingAudioFC->oformat->flags & AVFMT_NOFILE ) )
+        {
+            avio_open( &pRecordingAudioFC->pb, pRecordingAudioFC->filename, AVIO_FLAG_WRITE );
+        }
+        
+        
+        vRet = avformat_write_header( pRecordingAudioFC, NULL );
+        if(vRet==0)
+        {
+            NSLog(@"Audio File header write Success!!");
+        }
+        else
+        {
+            NSLog(@"Audio File header write Fail!!");
+            return;
+        }
     }
     else
     {
+        pAudioOutputFile=fopen([pRecordingFile UTF8String],"wb");
+        if (pAudioOutputFile==NULL)
+        {
+            NSLog(@"Open file %@ error",pRecordingFile);
+            return;
+        }
         // Save as WAV file
         // Create the wave header
         [AudioUtilities writeWavHeaderWithCodecCtx: aCodecCtx withFormatCtx: nil toFile: pAudioOutputFile];
@@ -652,7 +804,15 @@ withSeconds:(Float64)    seconds
     
     if(vRecordingAudioFormat==kAudioFormatMPEG4AAC)
     {
-        ;
+        if ( !pRecordingAudioFC )
+            return;
+        
+        av_write_trailer( pRecordingAudioFC );
+        
+        if ( pRecordingAudioFC->oformat && !( pRecordingAudioFC->oformat->flags & AVFMT_NOFILE ) && pRecordingAudioFC->pb )
+            avio_close( pRecordingAudioFC->pb );
+        
+        av_free( pRecordingAudioFC );
     }
     else
     {

@@ -1,41 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="5">
             <objects>
                 <viewController id="2" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Wg1-Sw-IGR"/>
+                        <viewControllerLayoutGuide type="bottom" id="cO5-rf-JoY"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="3">
-                        <rect key="frame" x="0.0" y="20" width="320" height="460"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8hS-i2-uGb">
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <rect key="frame" x="43" y="402" width="37" height="30"/>
                                 <state key="normal" title="PLAY">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="PlayAudio:" destination="2" eventType="touchUpInside" id="ohk-sm-rGg"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whU-m4-9kR">
+                                <rect key="frame" x="163" y="402" width="73" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="73" id="0wp-tv-tmF"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="Record">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="VideoRecordPressed:" destination="2" eventType="touchUpInside" id="JQm-Bv-cSO"/>
@@ -47,7 +44,7 @@
                             <constraint firstAttribute="bottom" secondItem="8hS-i2-uGb" secondAttribute="bottom" constant="48" id="PhN-pr-4BT"/>
                             <constraint firstItem="8hS-i2-uGb" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="43" id="bIb-Vb-S3k"/>
                             <constraint firstAttribute="trailing" secondItem="whU-m4-9kR" secondAttribute="trailing" constant="84" id="gEA-2x-Nbo"/>
-                            <constraint firstItem="whU-m4-9kR" firstAttribute="baseline" secondItem="8hS-i2-uGb" secondAttribute="baseline" type="default" id="x8C-Tw-mvB"/>
+                            <constraint firstItem="whU-m4-9kR" firstAttribute="baseline" secondItem="8hS-i2-uGb" secondAttribute="baseline" id="x8C-Tw-mvB"/>
                         </constraints>
                     </view>
                     <connections>

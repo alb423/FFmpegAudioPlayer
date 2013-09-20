@@ -50,8 +50,11 @@
     
     long LastStartTime;
     
-    // For audio save
+    // For audio recording
+    AVFormatContext *pRecordingAudioFC;
+    AVCodecContext  *pOutputCodecContext;
     bool   enableRecording;
+    UInt32 vRecordingAudioStreamIdx;
     UInt32 vRecordingAudioFormat;
     UInt32 vRecordingStatus;
     UInt32 vAudioOutputFileSize;
@@ -71,6 +74,7 @@
 
 - (void) RecordingStart:(NSString *)pRecordingFile;
 - (void) RecordingStop;
+- (void) RecordingSetAudioFormat:(int)vAudioFormat;
 @property BOOL bIsADTSAAS;
 //@property NSMutableArray *pSampleQueue;
 

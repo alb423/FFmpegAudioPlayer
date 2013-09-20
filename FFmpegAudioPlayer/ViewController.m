@@ -27,7 +27,11 @@
 
 // === LOCAL File ===
 //#define AUDIO_TEST_PATH @"19_Austria.mp3"
-//#define AUDIO_TEST_PATH @"AAC_12khz_Mono_5.aac"
+#define AUDIO_TEST_PATH @"AAC_12khz_Mono_5.aac"
+//#define AUDIO_TEST_PATH @"Audio2.mp4"
+//#define AUDIO_TEST_PATH @"7h800-2.mp4"
+//#define AUDIO_TEST_PATH @"iTunes_test4_AAC-LC_v4_Stereo_VBR_128kbps_44100Hz.m4a"
+
 //#define AUDIO_TEST_PATH @"test_mono_8000Hz_8bit_PCM.wav"
 //#define AUDIO_TEST_PATH @"output.pcm"
     
@@ -38,7 +42,7 @@
 // === MMS URL ===
 // plz reference http://alyzq.com/?p=777
 // Stereo, 64kbps, 48000Hz
-#define AUDIO_TEST_PATH @"mms://bcr.media.hinet.net/RA000009"
+//#define AUDIO_TEST_PATH @"mms://bcr.media.hinet.net/RA000009"
 //#define AUDIO_TEST_PATH @"mms://alive.rbc.cn/fm876"
 // A error URL
 //#define AUDIO_TEST_PATH @"mms://211.89.225.141/cnr001"
@@ -231,7 +235,10 @@
             
             // TODO: Currently We set sleep 5 seconds for buffer data
             // We should caculate the audio timestamp to make sure the buffer duration.
-            sleep(5);
+            if(IsLocalFile!=true)
+            {
+                sleep(5);
+            }
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self stopAlertView:nil];
             });
@@ -247,7 +254,12 @@
             // Run Audio Player in main thread
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self stopAlertView:nil];
-                sleep(5);
+                if(IsLocalFile!=true)
+                {
+                    NSLog(@"sleep 5 seconds");
+                    sleep(5);
+                }
+                
                 if([aPlayer getStatus]!=eAudioRunning)
                 {
                     [aPlayer Play];
@@ -259,9 +271,20 @@
                 
             });
             
+            
+            // Test only 20130908
+//            bRecordStart = true;
+//            [aPlayer RecordingSetAudioFormat:kAudioFormatMPEG4AAC];
+//            [aPlayer RecordingStart:@"/Users/liaokuohsun/Audio3.mp4"];
+            
+            
+            
             // Read ffmpeg audio packet in another thread
             [self readFFmpegAudioFrameAndDecode];
 #endif
+            
+            
+            
             [vBn setTitle:@"Play" forState:UIControlStateNormal];
         });
     }
@@ -307,6 +330,7 @@
         
     avcodec_register_all();
     av_register_all();
+    av_log_set_level(AV_LOG_VERBOSE);
     if(IsLocalFile!=TRUE)
     {
         avformat_network_init();
@@ -520,10 +544,17 @@
     else
     {
         // set recording format
-        //vRecordingAudioFormat = kAudioFormatLinearPCM; (Test ok)
-        //vRecordingAudioFormat = kAudioFormatMPEG4AAC; (need Test)
-        bRecordStart = true;        
+        //vRecordingAudioFormat = kAudioFormatLinearPCM;// (Test ok)
+        //vRecordingAudioFormat = kAudioFormatMPEG4AAC; //(need Test)
+        bRecordStart = true;
+#if 0
+        [aPlayer RecordingSetAudioFormat:kAudioFormatLinearPCM];        
         [aPlayer RecordingStart:@"/Users/liaokuohsun/2.wav"];
+#else
+        [aPlayer RecordingSetAudioFormat:kAudioFormatMPEG4AAC];
+        [aPlayer RecordingStart:@"/Users/liaokuohsun/Audio2.mp4"];
+        //[aPlayer RecordingStart:@"/Users/liaokuohsun/Audio2.m4a"];
+#endif
     }
     
     //[self startRecordingAlertView];
