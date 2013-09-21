@@ -35,6 +35,11 @@
 //@synthesize pSampleQueue;
 @synthesize bIsADTSAAS;
 
+-(int) getSize
+{
+    return [audioPacketQueue size];
+}
+
 
 -(int) putAVPacket: (AVPacket *) pkt
 {
@@ -82,11 +87,15 @@ void HandleOutputBuffer (
     
     // If no data, we put silence audio (PCM format only)
     // If AudioQueue buffer is empty, AudioQueue will stop. 
+    
+    // 20130716
+    // If AudioQueue is too small, it may be disconnected.
+    // We should try to reconnect again 
     if([audioPacketQueue count]==0)
     {
         int err, vSilenceDataSize = 1024*64;
 #if 0
-        if(vSlienceCount>10)
+        if(vSlienceCount>20)
         {
             // Stop fill silence, since the data may be eof or error happen
             //[self Stop:false];
@@ -149,7 +158,10 @@ void HandleOutputBuffer (
                 if(len<0){
                     gotFrame = 0;
                     printf("Error while decoding\n");
-                    break;
+                    // 20130609 modified start
+                    return -1;
+                    //break;
+                    // 20130609 modified end
                 }
                 if(gotFrame>0) {
                     int outCount=0;
@@ -197,8 +209,11 @@ void HandleOutputBuffer (
                                     if(vRecordingAudioFormat!=kAudioFormatLinearPCM)
                                     {
                                         //if(aCodecCtx->codec_id==AV_CODEC_ID_AAC)
-                                        if(aCodecCtx->codec_id!=AV_CODEC_ID_AAC)
+                                        //if(aCodecCtx->codec_id!=AV_CODEC_ID_AAC)
+                                        if(0)
                                         {
+                                            // no ffmpeg decodec
+                                            
                                             uint8_t *pHeader = &(AudioPacket.data[0]);
                                             // Parse audio data to see if there is ADTS header
                                             tAACADTSHeaderInfo vxADTSHeader={0};
@@ -219,10 +234,16 @@ void HandleOutputBuffer (
                                                 Pkt.data = AudioPacket.data;
                                             }
                                             //Pkt.stream_index = 1;//AudioPacket.stream_index;
-                                            //Pkt.flags |= AV_PKT_FLAG_KEY;
+                                            Pkt.flags |= AV_PKT_FLAG_KEY;
                                             
-                                            //av_write_frame(pRecordingAudioFC, &Pkt );
-                                            av_interleaved_write_frame( pRecordingAudioFC, &Pkt );
+                                            
+#if 0
+                                            //av_interleaved_write_frame( pRecordingAudioFC, &Pkt );
+#else
+                                            //AudioPacket.size = AudioPacket.size - 7;
+                                            //memmove(AudioPacket.data, AudioPacket.data+7,AudioPacket.size);
+                                            av_interleaved_write_frame( pRecordingAudioFC, &AudioPacket );
+#endif
                                         }
                                         else
                                         {
@@ -233,7 +254,7 @@ void HandleOutputBuffer (
                                             vRet = avcodec_encode_audio2(pOutputCodecContext, &Pkt, pAVFrame1, &gotFrame);
                                             av_interleaved_write_frame( pRecordingAudioFC, &Pkt );
                                             
-                                            NSLog(@"TODO vRet=%d",vRet);
+                                            //NSLog(@"TODO vRet=%d",vRet);
                                         }
                                     }
                                     else
@@ -569,8 +590,12 @@ void HandleOutputBuffer (
     return self;
 }    
     
+- (void) SetVolume:(float)vVolume
+{
+    AudioQueueSetParameter(mQueue, kAudioQueueParam_Volume, vVolume);
+}
 
-- (void) Play{
+- (int) Play{
     OSStatus eErr=noErr;
     
     int i;
@@ -580,7 +605,12 @@ void HandleOutputBuffer (
     
     for(i=0;i<AUDIO_BUFFER_QUANTITY;i++)
     {
-        [self putAVPacketsIntoAudioQueue:mBuffers[i]];
+        eErr = [self putAVPacketsIntoAudioQueue:mBuffers[i]];
+        if(eErr!=noErr)
+        {
+            NSLog(@"putAVPacketsIntoAudioQueue() error %ld", eErr);
+            return -1;
+        }
     }
     
     // 20130427 Test temparally    
@@ -591,16 +621,17 @@ void HandleOutputBuffer (
     if(eErr!=noErr)
     {
         NSLog(@"AudioQueuePrime() error %ld", eErr);
-        //return;
+        return -1;
     }
 #endif
     
-    //
     eErr=AudioQueueStart(mQueue, nil);
     if(eErr!=noErr)
     {
         NSLog(@"AudioQueueStart() error %ld", eErr);
+        return -1;
     }
+    return 0;
 }
 
 -(void)Stop:(BOOL)bStopImmediatelly{
@@ -743,7 +774,7 @@ withSeconds:(Float64)    seconds
         // Native AAC encoder is experimental and so you need to set additional flag to use.flag to use.
         AVDictionary *opts = NULL;
         av_dict_set(&opts, "strict", "experimental", 0);
-        
+
         if (avcodec_open2(pOutputCodecContext, pCodec, &opts) < 0) {
             fprintf(stderr, "\ncould not open codec\n");
         }

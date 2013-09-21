@@ -441,5 +441,8 @@
     return self;
 }
 
-
++ (int) EstimateAudioSecondsByBufferSize: (uint32_t) vSize WithSampleRate: (uint32_t)vSampleRate WithChannel: (uint32_t) vChannel
+{
+    return vSize/(vSampleRate*vChannel);
+}
 @end

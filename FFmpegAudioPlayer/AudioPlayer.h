@@ -12,6 +12,7 @@
 #include "libavformat/avformat.h"
 #include "libavutil/opt.h"
 #include "libswresample/swresample.h"
+
 // An audio queue can use any number of buffers—your application specifies how many. A typical number is three.
 #define NUM_BUFFERS 3
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000
@@ -63,15 +64,16 @@
 }
 
 -(id)initAudio: (AudioPacketQueue *) audioQueue withCodecCtx:(AVCodecContext *) aCodecCtx;
-- (void) Play;
+- (int) Play;
 - (void) Stop:(BOOL)bStopImmediatelly;
+- (void) SetVolume:(float)vVolume;
 -(void) decodeAudioFile: (NSString *) FilePathIn ToPCMFile:(NSString *) FilePathOut withCodecCtx: (AVCodecContext *)pAudioCodecCtx withFormat:(AVFormatContext *) pFormatCtx withStreamIdx :(int) audioStream;
 -(int) getStatus;
 
 -(int) putAVPacket: (AVPacket *) pkt;
 -(int) getAVPacket :(AVPacket *) pkt;
 -(void)freeAVPacket:(AVPacket *) pkt;
-
+-(int) getSize;
 - (void) RecordingStart:(NSString *)pRecordingFile;
 - (void) RecordingStop;
 - (void) RecordingSetAudioFormat:(int)vAudioFormat;

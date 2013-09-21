@@ -28,10 +28,6 @@
 // === LOCAL File ===
 //#define AUDIO_TEST_PATH @"19_Austria.mp3"
 #define AUDIO_TEST_PATH @"AAC_12khz_Mono_5.aac"
-//#define AUDIO_TEST_PATH @"Audio2.mp4"
-//#define AUDIO_TEST_PATH @"7h800-2.mp4"
-//#define AUDIO_TEST_PATH @"iTunes_test4_AAC-LC_v4_Stereo_VBR_128kbps_44100Hz.m4a"
-
 //#define AUDIO_TEST_PATH @"test_mono_8000Hz_8bit_PCM.wav"
 //#define AUDIO_TEST_PATH @"output.pcm"
     
@@ -66,16 +62,32 @@
 // #define AUDIO_TEST_PATH @"rtsp://media.iwant-in.net/pop"
 
 
+// When unitest is selected, we should disable error prompt msgbox of UI
+#define _UNITTEST_FOR_ALL_URL_ 0
+#define _UNITTEST_PLAY_INTERVAL_ 30
+
 @interface ViewController (){
     UIAlertView *pLoadRtspAlertView;
     UIActivityIndicatorView *pIndicator;
-    NSTimer *vLoadRtspAlertViewtimer;
+    NSTimer *vLoadRtspAlertViewTimer;
     NSTimer *vVisualizertimer;
+    
+    NSString *pUserSelectedURL;
 }
 @end
 
 
 @implementation ViewController
+{
+    NSInteger vPlayTimerSecond, vPlayTimerMinute;
+    NSArray *PlayTimerSecondOptions;
+    NSArray *PlayTimerMinuteOptions;
+
+#if _UNITTEST_FOR_ALL_URL_==1
+    NSInteger vTestCase;
+    NSString *pTestLog;
+#endif
+}
 
 // 20130903 albert.liao modified start
 @synthesize bRecordStart;
@@ -97,6 +109,7 @@
 
 - (void)viewDidLoad
 {
+    IsStop = TRUE;
     [super viewDidLoad];
     return;
 }
@@ -113,9 +126,13 @@
     if(timer!=nil)
     {
         [timer invalidate];
+#if _UNITTEST_FOR_ALL_URL_ == 1
+        pTestLog = [pTestLog stringByAppendingString:@" RTSP Fail\n"];
+#else
         UIAlertView *pErrAlertView = [[UIAlertView alloc] initWithTitle:@"\n\nRTSP error"
                                                                 message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [pErrAlertView show];
+#endif
         [self.PlayAudioButton setTitle:@"Play" forState:UIControlStateNormal];
     }
     
@@ -127,10 +144,10 @@
         pLoadRtspAlertView = nil;
     }
     
-    if(vLoadRtspAlertViewtimer)
+    if(vLoadRtspAlertViewTimer)
     {
-        [vLoadRtspAlertViewtimer invalidate];
-        vLoadRtspAlertViewtimer = nil;
+        [vLoadRtspAlertViewTimer invalidate];
+        vLoadRtspAlertViewTimer = nil;
     }
     else
         return;
@@ -152,7 +169,7 @@
     
     // start a timer for 60 seconds, if rtsp cannot connect correctly.
     // we should dismiss alert view and let user can try again or leave this program
-    vLoadRtspAlertViewtimer = [NSTimer scheduledTimerWithTimeInterval:30
+    vLoadRtspAlertViewTimer = [NSTimer scheduledTimerWithTimeInterval:30
                                      target:self
                                    selector:@selector(stopAlertView:)
                                    userInfo:nil
@@ -180,7 +197,8 @@
 - (IBAction)PlayAudio:(id)sender {
     
     UIButton *vBn = (UIButton *)sender;
-
+    if(vBn==nil)
+       vBn = _PlayAudioButton;
 #if 0
     NSString *pAudioInPath;
     pAudioInPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:AUDIO_TEST_PATH];
@@ -198,7 +216,7 @@
     visualizer = [[Visualizer alloc] initWithFrame:vxRect];
     [self.view addSubview:visualizer];
     
-    if([vBn.currentTitle isEqualToString:@"Stop"])
+    if(IsStop==false)//[vBn.currentTitle isEqualToString:@"Stop"])
     {
         [vBn setTitle:@"Play" forState:UIControlStateNormal];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
@@ -217,10 +235,13 @@
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [vBn setTitle:@"Play" forState:UIControlStateNormal];
                 [self stopAlertView:nil];
-                
+#if _UNITTEST_FOR_ALL_URL_ == 1
+                pTestLog = [pTestLog stringByAppendingString:@" RTSP Fail\n"];
+#else
                 UIAlertView *pErrAlertView = [[UIAlertView alloc] initWithTitle:@"\n\nRTSP error"
                                                                 message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
                 [pErrAlertView show];
+#endif
                 });
                 return;
             }
@@ -237,7 +258,7 @@
             // We should caculate the audio timestamp to make sure the buffer duration.
             if(IsLocalFile!=true)
             {
-                sleep(5);
+                sleep(AUDIO_BUFFER_TIME);
             }
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self stopAlertView:nil];
@@ -245,7 +266,20 @@
             
             if([aPlayer getStatus]!=eAudioRunning)
             {
-                [aPlayer Play];
+                int vRet = 0;
+                vRet = [aPlayer Play];
+                if(vRet<0)
+                {
+#if _UNITTEST_FOR_ALL_URL_ == 1
+                    pTestLog = [pTestLog stringByAppendingString:@" decode Fail\n"];
+#endif
+                    NSLog(@"[aPlayer Play] error");
+
+                }
+                else
+                {
+                    ;//do nothing
+                }
             }
             
 #else
@@ -257,12 +291,21 @@
                 if(IsLocalFile!=true)
                 {
                     NSLog(@"sleep 5 seconds");
-                    sleep(5);
+                    sleep(AUDIO_BUFFER_TIME);
                 }
                 
                 if([aPlayer getStatus]!=eAudioRunning)
                 {
-                    [aPlayer Play];
+                    int vRet = 0;
+                    vRet = [aPlayer Play];
+                    if(vRet<0)
+                    {
+#if _UNITTEST_FOR_ALL_URL_ == 1
+                        pTestLog = [pTestLog stringByAppendingString:@" decode Fail\n"];
+#endif
+                        NSLog(@"[aPlayer Play] error");
+                        
+                    }
                 }
                 
 //                vVisualizertimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self
@@ -283,17 +326,18 @@
             [self readFFmpegAudioFrameAndDecode];
 #endif
             
-            
-            
             [vBn setTitle:@"Play" forState:UIControlStateNormal];
         });
     }
 }
 
+
+#pragma mark - ffmpeg usage
 -(BOOL) initFFmpegAudioStream{
     
     NSString *pAudioInPath;
     AVCodec  *pAudioCodec;
+    AVDictionary *opts = 0;
     
     // 20130428 Test here
     {
@@ -303,27 +347,39 @@
         [AudioUtilities parseAACADTSHeader:pInput ToHeader:(tAACADTSHeaderInfo *) &vxADTSHeader];
     }
     
-    if( strncmp([AUDIO_TEST_PATH UTF8String], "rtsp", 4)==0)
+    // The pAudioInPath should be set when user select a url
+    if(pUserSelectedURL==nil)
     {
+        // use default url for testing
         pAudioInPath = AUDIO_TEST_PATH;
+    }
+    else
+    {
+        pAudioInPath = pUserSelectedURL;
+    }
+        
+    if( strncmp([pAudioInPath UTF8String], "rtsp", 4)==0)
+    {
+        av_dict_set(&opts, "rtsp_transport", "tcp", 0); // can set "udp", "tcp", "http"
         IsLocalFile = FALSE;
     }
-    else if( strncmp([AUDIO_TEST_PATH UTF8String], "mms:", 4)==0)
+    else if( strncmp([pAudioInPath UTF8String], "mms:", 4)==0)
     {
-        pAudioInPath = AUDIO_TEST_PATH;
-        //replay "mms:" to "mmsh:" or "mmst:"
+        //replace "mms:" to "mmsh:" or "mmst:"
+        av_dict_set(&opts, "rtsp_transport", "http", 0); // can set "udp", "tcp", "http"
         pAudioInPath = [pAudioInPath stringByReplacingOccurrencesOfString:@"mms:" withString:@"mmsh:"];
-        NSLog(@"pAudioPath=%@", pAudioInPath);
+//pAudioInPath = [pAudioInPath stringByReplacingOccurrencesOfString:@"mms:" withString:@"mmst:"];
+        //NSLog(@"pAudioPath=%@", pAudioInPath);
         IsLocalFile = FALSE;
     }
-    else if( strncmp([AUDIO_TEST_PATH UTF8String], "mmsh", 4)==0)
+    else if( strncmp([pAudioInPath UTF8String], "mmsh", 4)==0)
     {
-        pAudioInPath = AUDIO_TEST_PATH;
-        // TODO: replay "mms:" to "mmsh:" or "mmst:"
+        av_dict_set(&opts, "rtsp_transport", "http", 0);
         IsLocalFile = FALSE;
     }
     else
     {
+        av_dict_set(&opts, "rtsp_transport", "udp", 0);
         pAudioInPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:AUDIO_TEST_PATH];
         IsLocalFile = TRUE;
     }
@@ -342,20 +398,19 @@
     }
     
 #if 1 // TCP
-    AVDictionary *opts = 0;
-    av_dict_set(&opts, "rtsp_transport", "tcp", 0);
-    NSLog(@"%@", pAudioInPath);
+    //av_dict_set(&opts, "rtsp_transport", "tcp", 0);
+    NSLog(@"pAudioInPath=%@", pAudioInPath);
     
     // Open video file
     if(avformat_open_input(&pFormatCtx, [pAudioInPath cStringUsingEncoding:NSASCIIStringEncoding], NULL, &opts) != 0) {
 
-        if( strncmp([AUDIO_TEST_PATH UTF8String], "mmsh", 4)==0)
+        if( strncmp([pAudioInPath UTF8String], "mmst", 4)==0)
         {
-            av_log(NULL, AV_LOG_ERROR, "Couldn't open mmsh connection\n");
-            [pAudioInPath stringByReplacingOccurrencesOfString:@"mmsh:" withString:@"mmst:"];
+            av_log(NULL, AV_LOG_ERROR, "Couldn't open mmst connection\n");
+            pAudioInPath= [pAudioInPath stringByReplacingOccurrencesOfString:@"mmst:" withString:@"mmsh:"];
             if(avformat_open_input(&pFormatCtx, [pAudioInPath cStringUsingEncoding:NSASCIIStringEncoding], NULL, &opts) != 0)
             {
-                av_log(NULL, AV_LOG_ERROR, "Couldn't open mmst connection\n");
+                av_log(NULL, AV_LOG_ERROR, "Couldn't open mmsh connection to %s\n", [pAudioInPath UTF8String]);
                 return FALSE;
             }
         }
@@ -476,7 +531,6 @@
                     
                     // TODO: use pts/dts to decide the delay time
                     usleep(1000*LOCAL_FILE_DELAY_MS);
-                    
                 }
                 else
                 {
@@ -511,7 +565,18 @@
                 }
                 else
                 {
-                    //NSLog(@"receive unexpected packet!!");
+                    int i=0;
+                    NSLog(@"receive unexpected packet, size=%d!!", vxPacket.size);
+                    for(i=0;i<vxPacket.size;i+=7)
+                    {
+                        if(vxPacket.size-i>=8)
+                        {
+                        NSLog(@"%02X%02X%02X%02X %02X%02X%02X%02X",\
+                              vxPacket.data[i],vxPacket.data[i+1],vxPacket.data[i+2],vxPacket.data[i+3],
+                              vxPacket.data[i+4],vxPacket.data[i+5],vxPacket.data[i+6],vxPacket.data[i+7]);
+                        }
+                    // TODO: dump the packet
+                    }
                     av_free_packet(&vxPacket);
                 }
             }
@@ -553,7 +618,6 @@
 #else
         [aPlayer RecordingSetAudioFormat:kAudioFormatMPEG4AAC];
         [aPlayer RecordingStart:@"/Users/liaokuohsun/Audio2.mp4"];
-        //[aPlayer RecordingStart:@"/Users/liaokuohsun/Audio2.m4a"];
 #endif
     }
     

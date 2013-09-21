@@ -13,6 +13,8 @@
 #import "AudioPlayer.h"
 #import "Visualizer.h"
 
+#define AUDIO_BUFFER_TIME 10 // Seconds
+
 @interface ViewController : UIViewController {
 	AVFormatContext *pFormatCtx;    
     AVCodecContext *pAudioCodecCtx;

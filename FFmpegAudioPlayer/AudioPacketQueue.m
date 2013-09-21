@@ -11,7 +11,7 @@
 @implementation AudioPacketQueue
 
 @synthesize count;
-
+@synthesize size;
 
 - (id) initQueue
 {
@@ -21,6 +21,7 @@
         pQueue = [[NSMutableArray alloc] init];
         pLock = [[NSLock alloc]init];
         count = 0;
+        size = 0;
     }
     return self;
 }
@@ -44,6 +45,7 @@
     }
     //[pQueue removeAllObjects];
     count = 0;
+    size = 0;
     NSLog(@"Release Audio Packet Queue");
     if(pQueue) pQueue = nil;
     
@@ -64,8 +66,9 @@
     //NSLog(@"putAVPacket %d", [pQueue count]);
     NSMutableData *pTmpData = [[NSMutableData alloc] initWithBytes:pPacket length:sizeof(*pPacket)];
     [pQueue addObject: pTmpData];
+    size += pPacket->size;
     pTmpData = nil;
-    count++;
+    count= count + 1;
     [pLock unlock];
     return 1;
 }
@@ -75,14 +78,19 @@
     
     // Do we have any items?
     [pLock  lock];
-    if ([pQueue count]>0) {
+    //if ([pQueue count]>0) {
+    if (count>0) {
         packetData = [pQueue objectAtIndex:0];
         if(packetData!= nil)
         {
-            //NSLog(@"getAVPacket %d", [pQueue count]);
+            int vCount = [pQueue count];
+            if(vCount<10)
+                NSLog(@"getAVPacket %d", vCount);
             [packetData getBytes:pPacket];
             packetData = nil;
             [pQueue removeObjectAtIndex: 0];
+            if(pPacket)
+                size = size - pPacket->size;
             count--;
         }
         [pLock unlock];

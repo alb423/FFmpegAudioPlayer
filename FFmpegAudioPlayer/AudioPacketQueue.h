@@ -14,7 +14,8 @@
     NSLock *pLock;
 
 }
-@property     int count;
+@property  (nonatomic)  NSInteger count;
+@property  (nonatomic)  NSInteger size;
 - (id) initQueue;
 - (void) destroyQueue;
 -(int) putAVPacket: (AVPacket *) pkt;
