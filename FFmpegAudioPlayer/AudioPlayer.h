@@ -17,6 +17,13 @@
 #define NUM_BUFFERS 3
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000
 
+typedef enum eAACType {
+    eAAC_UNDEFINED  = 0,
+    eAAC_RAW        = 1,
+    eAAC_ADTS       = 2,
+    eAAC_LATM       = 3,
+}eAACType;
+
 
 @interface AudioPlayer : NSObject{
     
@@ -46,7 +53,6 @@
 
     AVCodecContext   *aCodecCtx;
     AudioPacketQueue *audioPacketQueue;
-    AVFrame          *pAudioFrame;
     SwrContext       *pSwrCtx;
     
     long LastStartTime;
@@ -79,5 +85,5 @@
 - (void) RecordingSetAudioFormat:(int)vAudioFormat;
 @property BOOL bIsADTSAAS;
 //@property NSMutableArray *pSampleQueue;
-
+@property eAACType vAACType;
 @end

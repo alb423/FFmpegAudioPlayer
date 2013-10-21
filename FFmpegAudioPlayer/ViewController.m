@@ -35,6 +35,9 @@
 //#define AUDIO_TEST_PATH @"WMP_Test11-WMA_WMA2_Mono_64kbps_44100Hz-Eric_Clapton-Wonderful_Tonight.WMA"
 //#define AUDIO_TEST_PATH @"WMP_Test12 - WMA_WMA2_Stereo_64kbps_44100Hz - Eric_Clapton-Wonderful_Tonight.WMA"
 
+// TO Test
+// #define AUDIO_TEST_PATH @"http://open.spotify.com/track/3wepnWWqG3Kn8yt3tj1wDy"
+
 // === MMS URL ===
 // plz reference http://alyzq.com/?p=777
 // Stereo, 64kbps, 48000Hz
@@ -525,6 +528,20 @@
             if(vErr>=0)
             {
                 if(vxPacket.stream_index==audioStream) {
+                    
+                    // 20130923 test
+#if 0
+                    AVPacket vxPacket2;
+                    uint8_t *pTmp=NULL;
+                    av_init_packet(&vxPacket2);
+                    pTmp = malloc(vxPacket.size);
+                    memcpy(pTmp, vxPacket.data, vxPacket.size);
+                    //vxPacket.data = (uint8_t *)frameData;
+                    vxPacket2.data = (uint8_t *)pTmp;
+                    vxPacket2.size = vxPacket.size;
+#endif
+                    // 20130923 test end
+                    
                     int ret = [aPlayer putAVPacket:&vxPacket];
                     if(ret <= 0)
                         NSLog(@"Put Audio Packet Error!!");
@@ -617,7 +634,7 @@
         [aPlayer RecordingStart:@"/Users/liaokuohsun/2.wav"];
 #else
         [aPlayer RecordingSetAudioFormat:kAudioFormatMPEG4AAC];
-        [aPlayer RecordingStart:@"/Users/liaokuohsun/Audio2.mp4"];
+        [aPlayer RecordingStart:@"/Users/liaokuohsun/Audio1.mp4"];
 #endif
     }
     

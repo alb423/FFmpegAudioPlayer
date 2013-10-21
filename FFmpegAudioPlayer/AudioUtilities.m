@@ -200,7 +200,7 @@
     
     if(pFormatCtx)
     {
-        audioDataSize=(pFormatCtx->duration)*(vBitsPerSample/8)*(pAudioCodecCtx->sample_rate)*(pAudioCodecCtx->channels);
+    audioDataSize=(pFormatCtx->duration)*(vBitsPerSample/8)*(pAudioCodecCtx->sample_rate)*(pAudioCodecCtx->channels);
     }
     fileSize=audioDataSize+36;
     
