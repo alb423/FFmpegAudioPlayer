@@ -635,6 +635,8 @@
 #else
         [aPlayer RecordingSetAudioFormat:kAudioFormatMPEG4AAC];
         [aPlayer RecordingStart:@"/Users/liaokuohsun/Audio1.mp4"];
+        //[aPlayer RecordingStart:@"/Users/liaokuohsun/Audio2.mp4"];
+        //[aPlayer RecordingStart:@"/Users/liaokuohsun/AudioSaveDirectly.mp4"];
 #endif
     }
     
