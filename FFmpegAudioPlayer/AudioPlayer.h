@@ -12,7 +12,6 @@
 #include "libavformat/avformat.h"
 #include "libavutil/opt.h"
 #include "libswresample/swresample.h"
-
 // An audio queue can use any number of buffers—your application specifies how many. A typical number is three.
 #define NUM_BUFFERS 3
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000
@@ -70,6 +69,11 @@ typedef enum eAACType {
 }
 
 -(id)initAudio: (AudioPacketQueue *) audioQueue withCodecCtx:(AVCodecContext *) aCodecCtx;
+-(id)initAudio: (AudioPacketQueue *) pInQueue withCodecId :(int) vCodecId
+    withSampleRate: (int)vSampleRate
+    withChannels:(int)vChannels
+    withFrameLength:(int)vFrameLength;
+
 - (int) Play;
 - (void) Stop:(BOOL)bStopImmediatelly;
 - (void) SetVolume:(float)vVolume;
@@ -83,6 +87,10 @@ typedef enum eAACType {
 - (void) RecordingStart:(NSString *)pRecordingFile;
 - (void) RecordingStop;
 - (void) RecordingSetAudioFormat:(int)vAudioFormat;
+
+- (void) RecordingStartWithFC:(AVFormatContext *) pRecordingAudioFC;
+- (void) RecordingStopWithFC:(AVFormatContext *) pFC;
+
 @property BOOL bIsADTSAAS;
 //@property NSMutableArray *pSampleQueue;
 @property eAACType vAACType;
