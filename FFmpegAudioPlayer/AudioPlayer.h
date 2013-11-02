@@ -5,6 +5,8 @@
 //  Created by Liao KuoHsun on 13/4/19.
 //
 //
+#ifndef AUDIOPLAYER_H
+#define AUDIOPLAYER_H
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -28,8 +30,10 @@ typedef enum eAACType {
     
     enum eAudioStatus {
         eAudioRunning = 1,
-        eAudioStop = 2
-    };
+        eAudioPause = 2,
+        eAudioStop = 3
+    }eAudioStatus;
+
     
     enum eAudioRecordingStatus {
         eRecordInit = 1,
@@ -46,7 +50,7 @@ typedef enum eAACType {
     SInt64                        mCurrentPacket;                 // 7
     UInt32                        mNumPacketsToRead;              // 8
     AudioStreamPacketDescription  *mPacketDescs;                  // 9
-    bool                          mIsRunning;                     // 10
+    int                          AudioStatus;                     // 10
     
     bool isFormatVBR;
 
@@ -84,6 +88,7 @@ typedef enum eAACType {
 -(int) getAVPacket :(AVPacket *) pkt;
 -(void)freeAVPacket:(AVPacket *) pkt;
 -(int) getSize;
+-(int) getCount;
 - (void) RecordingStart:(NSString *)pRecordingFile;
 - (void) RecordingStop;
 - (void) RecordingSetAudioFormat:(int)vAudioFormat;
@@ -95,3 +100,5 @@ typedef enum eAACType {
 //@property NSMutableArray *pSampleQueue;
 @property eAACType vAACType;
 @end
+
+#endif

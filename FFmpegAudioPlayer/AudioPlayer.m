@@ -17,11 +17,15 @@
 #import "mydef.h" // for DECODE_AUDIO_BY_FFMPEG definition
 #else
 #import "ViewController.h"
-#define DECODE_AUDIO_BY_FFMPEG 1
+#define DECODE_AUDIO_BY_FFMPEG 0
 #endif
 
 @implementation AudioPlayer
+{
+    NSTimer *vReConnectTimer;
+}
 
+#define AUDIO_LIVENESS_CHECK_TIMER 1  // Seconds
 #define AUDIO_BUFFER_SECONDS 1
 #define AUDIO_BUFFER_QUANTITY 3
 
@@ -38,10 +42,7 @@
 //    If the file is ADTS AAC, we can get them from ADTS header.
 //    Otherwise, get them from RTSP SDP.
 
-// TODO: recoder voice and packed as an ADTS AAC format
-// TODO: record the audio from streaming to a file (what kind of format??)
 
-// TODO: how to know the correct setting of AudioStreamBasicDescription from ffmpeg info??
 // =========== Test Sample =========== 
 // 1. Remote AAC (BlackBerry.mp4)
 //    can be decoded by FFMPEG(ok) or APPLE Hardware (ok)
@@ -67,6 +68,10 @@
     return [audioPacketQueue size];
 }
 
+-(int) getCount
+{
+    return [audioPacketQueue count];
+}
 
 -(int) putAVPacket: (AVPacket *) pkt
 {
@@ -85,10 +90,78 @@
 
 -(void)dealloc
 {
-    // TODO: check here for resource release
     [audioPacketQueue destroyQueue];
     audioPacketQueue = nil;
 }
+
+// 20131101 albert.liao modified start
+-(int)getAudioQueueRunningStatus
+{
+    OSStatus vRet = 0;
+    UInt32 bFlag=0, vSize=sizeof(UInt32);
+    vRet = AudioQueueGetProperty(mQueue,
+                                 kAudioQueueProperty_IsRunning,
+                                 &bFlag,
+                                 &vSize);
+    
+    return bFlag;
+}
+
+-(void)reConnect2:(NSTimer *)timer {
+    if(timer!=nil)
+    {
+        if([self getStatus]!=eAudioRunning)
+        {
+            if([self getCount]>5)
+            {
+                NSLog(@"func:%s line %d audio queue restart now",__func__, __LINE__);
+                [timer invalidate];
+                [self Play];
+            }
+        }
+    }
+}
+
+-(void) restartAudioQueue
+{
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        vReConnectTimer = [NSTimer scheduledTimerWithTimeInterval:AUDIO_LIVENESS_CHECK_TIMER
+                                                           target:self
+                                                         selector:@selector(reConnect2:)
+                                                         userInfo:nil
+                                                          repeats:YES];
+    });
+}
+
+void CheckAudioQueueRunningStatus(void *inUserData,
+                         AudioQueueRef           inAQ,
+                         AudioQueuePropertyID    inID)
+{
+    AudioPlayer* player=(__bridge AudioPlayer *)inUserData;
+    if(inID==kAudioQueueProperty_IsRunning)
+    {
+        UInt32 bFlag=0;
+        bFlag = [player getAudioQueueRunningStatus];
+        
+        if(bFlag==0)
+        {
+            NSLog(@"AudioQueueRunningStatus : stop");
+            if([player getStatus]!=eAudioStop)
+            {
+                NSLog(@"Try to restart Audio Queue");
+                [player restartAudioQueue];
+            }
+        }
+        else
+        {
+            NSLog(@"AudioQueueRunningStatus : start");
+        }
+    };
+}
+
+
+// 20131101 albert.liao modified end
+
 
 
 void HandleOutputBuffer (
@@ -108,19 +181,18 @@ void HandleOutputBuffer (
     AudioTimeStamp bufferStartTime={0};
     AVPacket AudioPacket={0};
     static int vSlienceCount=0;
-    int bRecording = 0;
+    
     AudioQueueBufferRef buffer=audioQueueBuffer;
     
     av_init_packet(&AudioPacket);    
     buffer->mAudioDataByteSize = 0;
     buffer->mPacketDescriptionCount = 0;
 
-    if(mIsRunning==false)
+    if(AudioStatus==eAudioStop)
     {
         return 0 ;
     }
     
-    // TODO: remove debug log
     // NSLog(@"get 1 from audioPacketQueue: %d", [audioPacketQueue count]);
     
     // If no data, we put silence audio (PCM format only)
@@ -132,13 +204,16 @@ void HandleOutputBuffer (
     if([audioPacketQueue count]==0)
     {
         int err, vSilenceDataSize = 1024*16;
-#if 0
+#if 1
         if(vSlienceCount>20)
         {
             // Stop fill silence, since the data may be eof or error happen
             //[self Stop:false];
-            mIsRunning = false;
-            return 0;
+            //AudioQueuePause(mQueue);
+            AudioStatus = eAudioPause;
+            NSLog(@"audioPacketQueue is empty for a long time!! restart it");
+            AudioQueueStop(mQueue, true);
+            return 1;
         }
 #endif
         vSlienceCount++;
@@ -166,11 +241,6 @@ void HandleOutputBuffer (
     }
     vSlienceCount = 0;
     
-    // Enable/Disable recording
-    if(vRecordingStatus==eRecordRecording)
-    {
-        bRecording = 1;
-    }
     
 //    while (([audioPacketQueue count]>0) && (buffer->mPacketDescriptionCount < buffer->mPacketDescriptionCapacity))
     if(buffer->mPacketDescriptionCount < buffer->mPacketDescriptionCapacity)
@@ -185,10 +255,17 @@ void HandleOutputBuffer (
             int gotFrame = 0;            
             int pktSize;
             int len=0;
+            int bRecording = 0;
             AVCodecContext   *pAudioCodecCtx = aCodecCtx;
             pktData=AudioPacket.data;
             pktSize=AudioPacket.size;
             
+            //NSLog(@"pktSize = %d", pktSize);
+            // Enable/Disable recording
+            if(vRecordingStatus==eRecordRecording)
+            {
+                bRecording = 1;
+            }
             
             while(pktSize>0)
             {
@@ -278,8 +355,7 @@ void HandleOutputBuffer (
                                             //Pkt.stream_index = 1;//AudioPacket.stream_index;
                                             Pkt.flags |= AV_PKT_FLAG_KEY;
                                     
-                                            // TODO: test this feature in AudipPlayer
-                                            //av_write_frame(pRecordingAudioFC, &AudioPacket );
+
                                             if(pRecordingAudioFC)
                                                 av_interleaved_write_frame( pRecordingAudioFC, &Pkt );
                                             else
@@ -949,6 +1025,10 @@ void HandleOutputBuffer (
     Float32 gain=1.0;
     AudioQueueSetParameter(mQueue, kAudioQueueParam_Volume, gain);
     
+    AudioQueueAddPropertyListener(mQueue,
+                                  kAudioQueueProperty_IsRunning,
+                                  CheckAudioQueueRunningStatus,
+                                  (__bridge void *)(self));
     return self;
 }    
 
@@ -1013,9 +1093,9 @@ withFrameLength:(int)vFrameLength{
     
     int i;
 
-    if(mIsRunning==true) return -1;
+    if(AudioStatus==eAudioRunning) return -1;
     
-    mIsRunning = true;
+    AudioStatus = eAudioRunning;
     LastStartTime = 0;
     
     for(i=0;i<AUDIO_BUFFER_QUANTITY;i++)
@@ -1030,7 +1110,7 @@ withFrameLength:(int)vFrameLength{
     
     // 20130427 Test temparally    
     // Decodes enqueued buffers in preparation for playback
-    
+
 #if DECODE_AUDIO_BY_FFMPEG == 0
     eErr=AudioQueuePrime(mQueue, 0, NULL);
     if(eErr!=noErr)
@@ -1046,13 +1126,16 @@ withFrameLength:(int)vFrameLength{
         NSLog(@"AudioQueueStart() error %ld", eErr);
         return -1;
     }
+    
     return 0;
 }
 
 -(void)Stop:(BOOL)bStopImmediatelly{
     
-    mIsRunning = false;
-
+    AudioStatus = eAudioStop;
+    [vReConnectTimer invalidate];
+    vReConnectTimer = nil;
+    
     AudioQueueStop(mQueue, bStopImmediatelly);
     
     // Disposing of the audio queue also disposes of all its resources, including its buffers.
@@ -1064,10 +1147,7 @@ withFrameLength:(int)vFrameLength{
 
 
 -(int) getStatus{
-    if(mIsRunning==true)
-        return eAudioRunning;
-    else
-        return eAudioStop;
+    return AudioStatus;
 }
 
 

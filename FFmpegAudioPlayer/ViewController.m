@@ -286,6 +286,11 @@
             }
             
 #else
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+                [self readFFmpegAudioFrameAndDecode];
+            });
+            
             //[visualizer setSampleRate:pAudioCodecCtx->sample_rate];
             // Dismiss alertview in main thread
             // Run Audio Player in main thread
@@ -326,7 +331,7 @@
             
             
             // Read ffmpeg audio packet in another thread
-            [self readFFmpegAudioFrameAndDecode];
+            //[self readFFmpegAudioFrameAndDecode];
 #endif
             
             [vBn setTitle:@"Play" forState:UIControlStateNormal];
@@ -519,6 +524,7 @@
     AVPacket vxPacket;
     av_init_packet(&vxPacket);    
     
+    int i = 1;
     if(IsLocalFile == TRUE)
     {
         while(IsStop==FALSE)
@@ -548,6 +554,8 @@
                     
                     // TODO: use pts/dts to decide the delay time
                     usleep(1000*LOCAL_FILE_DELAY_MS);
+                    
+                    usleep(i*1000);
                 }
                 else
                 {

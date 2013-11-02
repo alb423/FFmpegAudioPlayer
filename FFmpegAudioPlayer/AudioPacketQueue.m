@@ -63,7 +63,7 @@
     
     [pLock lock];
     
-    //NSLog(@"putAVPacket %d", [pQueue count]);
+    NSLog(@"putAVPacket %d", [pQueue count]);
     NSMutableData *pTmpData = [[NSMutableData alloc] initWithBytes:pPacket length:sizeof(*pPacket)];
     [pQueue addObject: pTmpData];
     size += pPacket->size;
