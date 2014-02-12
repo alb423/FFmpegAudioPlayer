@@ -17,7 +17,7 @@
 #import "mydef.h" // for DECODE_AUDIO_BY_FFMPEG definition
 #else
 #import "ViewController.h"
-#define DECODE_AUDIO_BY_FFMPEG 0
+#define DECODE_AUDIO_BY_FFMPEG 1//0
 #endif
 
 @implementation AudioPlayer
