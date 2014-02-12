@@ -301,6 +301,10 @@
                     NSLog(@"sleep 5 seconds");
                     sleep(AUDIO_BUFFER_TIME);
                 }
+                else
+                {
+                    sleep(1);
+                }
                 
                 if([aPlayer getStatus]!=eAudioRunning)
                 {
@@ -521,6 +525,7 @@
 
 -(void) readFFmpegAudioFrameAndDecode {
     int vErr;
+    BOOL bAudioPlayerInit = FALSE;
     AVPacket vxPacket;
     av_init_packet(&vxPacket);    
     
