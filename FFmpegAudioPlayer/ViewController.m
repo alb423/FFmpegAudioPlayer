@@ -643,11 +643,14 @@
         //vRecordingAudioFormat = kAudioFormatMPEG4AAC; //(need Test)
         bRecordStart = true;
 #if 0
-        [aPlayer RecordingSetAudioFormat:kAudioFormatLinearPCM];        
-        [aPlayer RecordingStart:@"/Users/liaokuohsun/2.wav"];
+        [aPlayer RecordingSetAudioFormat:kAudioFormatLinearPCM];
+        NSString *pTmpPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Audio2.wav"];
+        [aPlayer RecordingStart:pTmpPath];
 #else
         [aPlayer RecordingSetAudioFormat:kAudioFormatMPEG4AAC];
-        [aPlayer RecordingStart:@"/Users/liaokuohsun/Audio1.mp4"];
+        NSString *pTmpPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"Audio1.mp4"];
+        
+        [aPlayer RecordingStart:pTmpPath];
         //[aPlayer RecordingStart:@"/Users/liaokuohsun/Audio2.mp4"];
         //[aPlayer RecordingStart:@"/Users/liaokuohsun/AudioSaveDirectly.mp4"];
 #endif
